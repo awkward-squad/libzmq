@@ -84,17 +84,17 @@ foreign import capi unsafe "zmq.h zmq_msg_copy"
 foreign import capi unsafe "zmq.h zmq_msg_data"
   zmq_msg_data :: Ptr Zmq_msg -> IO (Ptr a)
 
--- | Get a ØMQ message metadata property.
---
--- http://api.zeromq.org/master:zmq-msg-gets
-foreign import capi unsafe "zmq.h zmq_msg_gets"
-  zmq_msg_gets :: Ptr Zmq_msg -> CString -> IO CString
-
 -- | Get a ØMQ message option.
 --
 -- http://api.zeromq.org/master:zmq-msg-get
 foreign import capi unsafe "zmq.h zmq_msg_get"
   zmq_msg_get :: Ptr Zmq_msg -> CInt -> IO CInt
+
+-- | Get a ØMQ message metadata property.
+--
+-- http://api.zeromq.org/master:zmq-msg-gets
+foreign import capi unsafe "zmq.h zmq_msg_gets"
+  zmq_msg_gets :: Ptr Zmq_msg -> CString -> IO CString
 
 -- | Initialise an empty ØMQ message.
 --
