@@ -1,7 +1,5 @@
 packages: 
   libzmq-bindings, 
-  libzmq, 
-  zmq,
-  zmq-guide-examples
+  libzmq
 
 with-compiler: ghc-9.2.2

@@ -1,5 +1,5 @@
 {
-  description = "zmq";
+  description = "libzmq";
 
   inputs = {
     nixpkgs = {
