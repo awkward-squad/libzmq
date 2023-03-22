@@ -19,6 +19,7 @@ module Libzmq
     -- ** Message
     zmq_msg_init,
     zmq_msg_init_size,
+    zmq_msg_free,
     zmq_msg_send,
     zmq_msg_send_dontwait,
     zmq_msg_recv,
