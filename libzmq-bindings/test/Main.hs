@@ -35,7 +35,6 @@ tests =
     testGroup "zmq_ctx_shutdown" zmq_ctx_shutdown_tests,
     testGroup "zmq_ctx_term" zmq_ctx_term_tests,
     testGroup "zmq_msg_copy" zmq_msg_copy_tests,
-    testGroup "zmq_msg_data" zmq_msg_data_tests,
     testGroup "zmq_msg_get" zmq_msg_get_tests,
     testGroup "zmq_msg_gets" zmq_msg_gets_tests,
     testGroup "zmq_msg_init" zmq_msg_init_tests,
@@ -46,7 +45,6 @@ tests =
     testGroup "zmq_msg_recv" zmq_msg_recv_tests,
     testGroup "zmq_msg_send" zmq_msg_send_tests,
     testGroup "zmq_msg_set" zmq_msg_set_tests,
-    testGroup "zmq_msg_size" zmq_msg_size_tests,
     testGroup "zmq_strerror" zmq_strerror_tests,
     testGroup "zmq_version" zmq_version_tests
   ]
@@ -167,9 +165,6 @@ zmq_msg_copy_tests =
       zmq_ctx_term ctx >>= (@?= 0)
   ]
 
-zmq_msg_data_tests :: [TestTree]
-zmq_msg_data_tests = []
-
 zmq_msg_get_tests :: [TestTree]
 zmq_msg_get_tests = []
 
@@ -180,7 +175,14 @@ zmq_msg_init_tests :: [TestTree]
 zmq_msg_init_tests = []
 
 zmq_msg_init_data_tests :: [TestTree]
-zmq_msg_init_data_tests = []
+zmq_msg_init_data_tests =
+  [ testCase "initializes a message with data" do
+      ctx <- zmq_ctx_new
+      with_string_message "hello" \message -> do
+        message_string message >>= (@?= "hello")
+        zmq_msg_close message >>= (@?= 0)
+      zmq_ctx_term ctx >>= (@?= 0)
+  ]
 
 zmq_msg_init_size_tests :: [TestTree]
 zmq_msg_init_size_tests = []
@@ -199,9 +201,6 @@ zmq_msg_send_tests = []
 
 zmq_msg_set_tests :: [TestTree]
 zmq_msg_set_tests = []
-
-zmq_msg_size_tests :: [TestTree]
-zmq_msg_size_tests = []
 
 zmq_strerror_tests :: [TestTree]
 zmq_strerror_tests =
