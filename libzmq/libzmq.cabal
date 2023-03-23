@@ -17,6 +17,7 @@ library
     DerivingStrategies
     GADTs
     LambdaCase
+    OverloadedStrings
     PatternSynonyms
     ScopedTypeVariables
     ViewPatterns

@@ -10,7 +10,6 @@ import Data.ByteString.Unsafe qualified as ByteString.Unsafe
 import Data.Coerce (coerce)
 import Data.Int (Int64)
 import Data.Text (Text)
-import Data.Text.Encoding qualified as Text
 import Data.Text.Foreign qualified as Text
 import Data.Text.Internal (Text (Text))
 import Data.Void (Void)
@@ -29,7 +28,37 @@ import Libzmq.Internal.Types
     Zmq_socket_events (..),
     Zmq_socket_option (..),
     Zmq_socket_type (..),
+    pattern EADDRINUSE,
+    pattern EADDRNOTAVAIL,
+    pattern EAFNOSUPPORT,
+    pattern EAGAIN,
+    pattern EBADF,
+    pattern ECONNABORTED,
+    pattern ECONNREFUSED,
+    pattern ECONNRESET,
+    pattern EFAULT,
+    pattern EFSM,
+    pattern EHOSTUNREACH,
+    pattern EINPROGRESS,
+    pattern EINTR,
     pattern EINVAL,
+    pattern EMFILE,
+    pattern EMSGSIZE,
+    pattern EMTHREAD,
+    pattern ENETDOWN,
+    pattern ENETRESET,
+    pattern ENETUNREACH,
+    pattern ENOBUFS,
+    pattern ENOCOMPATPROTO,
+    pattern ENODEV,
+    pattern ENOENT,
+    pattern ENOMEM,
+    pattern ENOTCONN,
+    pattern ENOTSOCK,
+    pattern ENOTSUP,
+    pattern EPROTONOSUPPORT,
+    pattern ETERM,
+    pattern ETIMEDOUT,
   )
 import System.IO.Unsafe (unsafeDupablePerformIO)
 
@@ -45,8 +74,39 @@ zmq_errno =
 --
 -- http://api.zeromq.org/master:zmq-strerror
 zmq_strerror :: Zmq_error -> Text
-zmq_strerror (Zmq_error err) =
-  Text.decodeUtf8 (unsafeDupablePerformIO (ByteString.Unsafe.unsafePackCString (Libzmq.Bindings.zmq_strerror err)))
+zmq_strerror = \case
+  -- We just copy the strings here, no need to go through CString
+  EADDRINUSE -> "Address already in use"
+  EADDRNOTAVAIL -> "Can't assign requested address"
+  EAFNOSUPPORT -> "Address family not supported by protocol family"
+  EAGAIN -> "Resource temporarily unavailable"
+  EBADF -> "Bad file descriptor"
+  ECONNABORTED -> "Software caused connection abort"
+  ECONNREFUSED -> "Connection refused"
+  ECONNRESET -> "Connection reset by peer"
+  EFAULT -> "Bad address"
+  EFSM -> "Operation cannot be accomplished in current state"
+  EHOSTUNREACH -> "Host unreachable"
+  EINPROGRESS -> "Operation now in progress"
+  EINTR -> "Interrupted system call"
+  EINVAL -> "Invalid argument"
+  EMFILE -> "Too many open files"
+  EMSGSIZE -> "Message too long"
+  EMTHREAD -> "No thread available"
+  ENETDOWN -> "Network is down"
+  ENETRESET -> "Network dropped connection on reset"
+  ENETUNREACH -> "Network is unreachable"
+  ENOBUFS -> "No buffer space available"
+  ENOCOMPATPROTO -> "The protocol is not compatible with the socket type"
+  ENODEV -> "Operation not supported by device"
+  ENOENT -> "No such file or directory"
+  ENOMEM -> "Cannot allocate memory"
+  ENOTCONN -> "Socket is not connected"
+  ENOTSOCK -> "Socket operation on non-socket"
+  ENOTSUP -> "Operation not supported"
+  EPROTONOSUPPORT -> "Protocol not supported"
+  ETERM -> "Context was terminated"
+  ETIMEDOUT -> "Operation timed out"
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Version
