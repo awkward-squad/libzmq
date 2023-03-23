@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Data.Coerce (coerce)
-import Foreign (alloca, peek, sizeOf)
+import Foreign (Ptr, free, malloc, nullFunPtr, nullPtr, peek, sizeOf)
 import Foreign.C
   ( CInt,
     Errno (..),
@@ -14,14 +14,18 @@ import Foreign.C
     eNODEV,
     eNOENT,
     eNOMEM,
+    newCStringLen,
     peekCString,
+    peekCStringLen,
   )
+import GHC.IO.Encoding qualified as Encoding
 import Libzmq.Bindings
 import Test.Tasty
 import Test.Tasty.HUnit
 
 main :: IO ()
-main =
+main = do
+  Encoding.setForeignEncoding Encoding.char8 -- ascii test cases
   defaultMain (testGroup "tests" tests)
 
 tests :: [TestTree]
@@ -30,7 +34,6 @@ tests =
     testGroup "zmq_ctx_set" zmq_ctx_set_tests,
     testGroup "zmq_ctx_shutdown" zmq_ctx_shutdown_tests,
     testGroup "zmq_ctx_term" zmq_ctx_term_tests,
-    testGroup "zmq_msg_close" zmq_msg_close_tests,
     testGroup "zmq_msg_copy" zmq_msg_copy_tests,
     testGroup "zmq_msg_data" zmq_msg_data_tests,
     testGroup "zmq_msg_get" zmq_msg_get_tests,
@@ -151,11 +154,18 @@ zmq_ctx_term_tests =
       zmq_errno >>= (@?= _EFAULT)
   ]
 
-zmq_msg_close_tests :: [TestTree]
-zmq_msg_close_tests = []
-
 zmq_msg_copy_tests :: [TestTree]
-zmq_msg_copy_tests = []
+zmq_msg_copy_tests =
+  [ testCase "copies message contents" do
+      ctx <- zmq_ctx_new
+      with_string_message "hello" \src -> do
+        with_empty_message \dest -> do
+          zmq_msg_copy dest src >>= (@?= 0)
+          message_string dest >>= (@?= "hello")
+          zmq_msg_close dest >>= (@?= 0)
+        zmq_msg_close src >>= (@?= 0)
+      zmq_ctx_term ctx >>= (@?= 0)
+  ]
 
 zmq_msg_data_tests :: [TestTree]
 zmq_msg_data_tests = []
@@ -196,13 +206,17 @@ zmq_msg_size_tests = []
 zmq_strerror_tests :: [TestTree]
 zmq_strerror_tests =
   [ testCase "returns the libzmq version" do
-      (x, y, z) <-
-        alloca \px ->
-          alloca \py ->
-            alloca \pz -> do
-              zmq_version px py pz
-              (,,) <$> peek px <*> peek py <*> peek pz
+      px <- malloc
+      py <- malloc
+      pz <- malloc
+      zmq_version px py pz
+      x <- peek px
+      y <- peek py
+      z <- peek pz
       (x, y, z) @?= (4, 3, 4)
+      free px
+      free py
+      free pz
   ]
 
 zmq_version_tests :: [TestTree]
@@ -281,3 +295,27 @@ _ENOENT =
 _ENOMEM :: CInt
 _ENOMEM =
   coerce @Errno @CInt eNOMEM
+
+message_string :: Ptr Zmq_msg -> IO String
+message_string message = do
+  len <- zmq_msg_size message
+  assertBool "zmq_msg_size failed" (len > 0)
+  string <- zmq_msg_data message
+  peekCStringLen (string, fromIntegral len)
+
+with_empty_message :: (Ptr Zmq_msg -> IO a) -> IO a
+with_empty_message action = do
+  message <- malloc
+  zmq_msg_init message >>= (@?= 0)
+  result <- action message
+  free message
+  pure result
+
+with_string_message :: String -> (Ptr Zmq_msg -> IO a) -> IO a
+with_string_message string action = do
+  (c_string, fromIntegral -> len) <- newCStringLen string
+  message <- malloc
+  zmq_msg_init_data message c_string len nullFunPtr nullPtr >>= (@?= 0)
+  result <- action message
+  free message
+  pure result

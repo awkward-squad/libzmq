@@ -30,6 +30,7 @@ common component
     CApiFFI
     DerivingStrategies
     InterruptibleFFI
+    ViewPatterns
   default-language: GHC2021
   ghc-options:
     -Weverything
