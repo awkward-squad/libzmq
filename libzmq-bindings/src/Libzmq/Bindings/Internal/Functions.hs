@@ -106,7 +106,7 @@ foreign import capi unsafe "zmq.h zmq_msg_init"
 --
 -- http://api.zeromq.org/master:zmq-msg-init-data
 foreign import capi unsafe "zmq.h zmq_msg_init_data"
-  zmq_msg_init_data :: Ptr Zmq_msg -> Ptr a -> CSize -> FunPtr (Ptr a -> Ptr b -> IO ()) -> Ptr b -> IO ()
+  zmq_msg_init_data :: Ptr Zmq_msg -> Ptr a -> CSize -> FunPtr (Ptr a -> Ptr b -> IO ()) -> Ptr b -> IO CInt
 
 -- | Initialize an empty ØMQ message of a specified size.
 --
