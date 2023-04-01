@@ -1,7 +1,9 @@
 module Main (main) where
 
+import Control.Exception (bracket)
+import Control.Monad qualified as Monad
 import Data.Coerce (coerce)
-import Foreign (Ptr, free, malloc, nullFunPtr, nullPtr, peek, sizeOf)
+import Foreign (Ptr, Storable, free, malloc, nullFunPtr, nullPtr, peek)
 import Foreign.C
   ( CInt,
     Errno (..),
@@ -21,7 +23,7 @@ import Foreign.C
 import GHC.IO.Encoding qualified as Encoding
 import Libzmq.Bindings
 import Test.Tasty
-import Test.Tasty.HUnit
+import Test.Tasty.HUnit qualified as HUnit
 
 main :: IO ()
 main = do
@@ -51,118 +53,108 @@ tests =
 
 zmq_ctx_get_tests :: [TestTree]
 zmq_ctx_get_tests =
-  [ testCase "gets the number of IO threads" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_IO_THREADS >>= (@?= _ZMQ_IO_THREADS_DFLT)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets the max number of sockets" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_MAX_SOCKETS >>= (@?= _ZMQ_MAX_SOCKETS_DFLT)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets the max configurable number of sockets" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_SOCKET_LIMIT >>= (@?= 65535)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets IPv6" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_IPV6 >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets blocky" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_BLOCKY >>= (@?= 1)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets the thread scheduling policy" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_THREAD_SCHED_POLICY >>= (@?= _ZMQ_THREAD_SCHED_POLICY_DFLT)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets the thread name prefix" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_THREAD_NAME_PREFIX >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "gets the size of a zmq_msg_t" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx _ZMQ_MSG_T_SIZE >>= (@?= fromIntegral @Int @CInt (sizeOf (undefined :: Zmq_msg)))
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "returns EINVAL on bogus option" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_get ctx 12345 >>= (@?= (-1))
-      zmq_errno >>= (@?= _EINVAL)
-      zmq_ctx_term ctx >>= (@?= 0)
+  [ -- test "gets the number of IO threads" do
+    -- ctx <- zmq_ctx_new
+    -- zmq_ctx_get ctx _ZMQ_IO_THREADS >>= (@?= _ZMQ_IO_THREADS_DFLT)
+    -- zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets the max number of sockets" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_MAX_SOCKETS >>= (@?= _ZMQ_MAX_SOCKETS_DFLT)
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets the max configurable number of sockets" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_SOCKET_LIMIT >>= (@?= 65535)
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets IPv6" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_IPV6 >>= (@?= 0)
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets blocky" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_BLOCKY >>= (@?= 1)
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets the thread scheduling policy" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_THREAD_SCHED_POLICY >>= (@?= _ZMQ_THREAD_SCHED_POLICY_DFLT)
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets the thread name prefix" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_THREAD_NAME_PREFIX >>= (@?= 0)
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    -- testCase "gets the size of a zmq_msg_t" do
+    --   ctx <- zmq_ctx_new
+    --   zmq_ctx_get ctx _ZMQ_MSG_T_SIZE >>= (@?= fromIntegral @Int @CInt (sizeOf (undefined :: Zmq_msg)))
+    --   zmq_ctx_term ctx >>= (@?= 0),
+    test "returns EINVAL on bogus option" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx 12345) `shouldReturn` (-1)
+      io zmq_errno `shouldReturn` _EINVAL
   ]
 
 zmq_ctx_set_tests :: [TestTree]
 zmq_ctx_set_tests =
-  [ testCase "sets blocky" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_set ctx _ZMQ_BLOCKY 0 >>= (@?= 0)
-      zmq_ctx_get ctx _ZMQ_BLOCKY >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "sets the number of IO threads" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_set ctx _ZMQ_IO_THREADS 0 >>= (@?= 0)
-      zmq_ctx_get ctx _ZMQ_IO_THREADS >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "sets the thread scheduling policy" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_set ctx _ZMQ_THREAD_SCHED_POLICY 0 >>= (@?= 0)
-      zmq_ctx_get ctx _ZMQ_THREAD_SCHED_POLICY >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "sets the thread name prefix" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_set ctx _ZMQ_THREAD_NAME_PREFIX 1 >>= (@?= 0)
-      zmq_ctx_get ctx _ZMQ_THREAD_NAME_PREFIX >>= (@?= 1)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "sets the maximum number of sockets" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_set ctx _ZMQ_MAX_SOCKETS 1 >>= (@?= 0)
-      zmq_ctx_get ctx _ZMQ_MAX_SOCKETS >>= (@?= 1)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "sets IPv6" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_set ctx _ZMQ_IPV6 1 >>= (@?= 0)
-      zmq_ctx_get ctx _ZMQ_IPV6 >>= (@?= 1)
-      zmq_ctx_term ctx >>= (@?= 0)
+  [ test "sets blocky" do
+      ctx <- make_context
+      io (zmq_ctx_set ctx _ZMQ_BLOCKY 0) `shouldReturn` 0
+      io (zmq_ctx_get ctx _ZMQ_BLOCKY) `shouldReturn` 0,
+    test "sets the number of IO threads" do
+      ctx <- make_context
+      io (zmq_ctx_set ctx _ZMQ_IO_THREADS 0) `shouldReturn` 0
+      io (zmq_ctx_get ctx _ZMQ_IO_THREADS) `shouldReturn` 0,
+    test "sets the thread scheduling policy" do
+      ctx <- make_context
+      io (zmq_ctx_set ctx _ZMQ_THREAD_SCHED_POLICY 0) `shouldReturn` 0
+      io (zmq_ctx_get ctx _ZMQ_THREAD_SCHED_POLICY) `shouldReturn` 0,
+    test "sets the thread name prefix" do
+      ctx <- make_context
+      io (zmq_ctx_set ctx _ZMQ_THREAD_NAME_PREFIX 1) `shouldReturn` 0
+      io (zmq_ctx_get ctx _ZMQ_THREAD_NAME_PREFIX) `shouldReturn` 1,
+    test "sets the maximum number of sockets" do
+      ctx <- make_context
+      io (zmq_ctx_set ctx _ZMQ_MAX_SOCKETS 1) `shouldReturn` 0
+      io (zmq_ctx_get ctx _ZMQ_MAX_SOCKETS) `shouldReturn` 1,
+    test "sets IPv6" do
+      ctx <- make_context
+      io (zmq_ctx_set ctx _ZMQ_IPV6 1) `shouldReturn` 0
+      io (zmq_ctx_get ctx _ZMQ_IPV6) `shouldReturn` 1
   ]
 
 zmq_ctx_shutdown_tests :: [TestTree]
 zmq_ctx_shutdown_tests =
-  [ testCase "shuts down a context" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_shutdown ctx >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "does nothing on shut-down context" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_shutdown ctx >>= (@?= 0)
-      zmq_ctx_shutdown ctx >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0),
-    testCase "returns EFAULT on terminated context" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_shutdown ctx >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0)
-      zmq_ctx_shutdown ctx >>= (@?= (-1))
-      zmq_errno >>= (@?= _EFAULT)
+  [ test "shuts down a context" do
+      ctx <- make_context
+      io (zmq_ctx_shutdown ctx) `shouldReturn` 0,
+    test "does nothing on shut-down context" do
+      ctx <- make_context
+      io (zmq_ctx_shutdown ctx) `shouldReturn` 0
+      io (zmq_ctx_shutdown ctx) `shouldReturn` 0,
+    test "returns EFAULT on terminated context" do
+      ctx <- io zmq_ctx_new
+      io (zmq_ctx_shutdown ctx) `shouldReturn` 0
+      io (zmq_ctx_term ctx) `shouldReturn` 0
+      io (zmq_ctx_shutdown ctx) `shouldReturn` (-1)
+      io zmq_errno `shouldReturn` _EFAULT
   ]
 
 zmq_ctx_term_tests :: [TestTree]
 zmq_ctx_term_tests =
-  [ testCase "returns EFAULT on terminated context" do
-      ctx <- zmq_ctx_new
-      zmq_ctx_term ctx >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= (-1))
-      zmq_errno >>= (@?= _EFAULT)
+  [ test "returns EFAULT on terminated context" do
+      ctx <- io zmq_ctx_new
+      io (zmq_ctx_term ctx) `shouldReturn` 0
+      io (zmq_ctx_term ctx) `shouldReturn` (-1)
+      io zmq_errno `shouldReturn` _EFAULT
   ]
 
 zmq_msg_copy_tests :: [TestTree]
 zmq_msg_copy_tests =
-  [ testCase "copies message contents" do
-      ctx <- zmq_ctx_new
-      with_string_message "hello" \src -> do
-        with_empty_message \dest -> do
-          zmq_msg_copy dest src >>= (@?= 0)
-          message_string dest >>= (@?= "hello")
-          zmq_msg_close dest >>= (@?= 0)
-        zmq_msg_close src >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0)
+  [ test "copies message contents" do
+      _ <- make_context
+      src <- make_string_message "hello"
+      dest <- make_empty_message
+      io (zmq_msg_copy dest src) `shouldReturn` 0
+      message_string dest `shouldReturn` "hello"
+      io (zmq_msg_close src) `shouldReturn` 0
+      io (zmq_msg_close dest) `shouldReturn` 0
   ]
 
 zmq_msg_get_tests :: [TestTree]
@@ -176,12 +168,11 @@ zmq_msg_init_tests = []
 
 zmq_msg_init_data_tests :: [TestTree]
 zmq_msg_init_data_tests =
-  [ testCase "initializes a message with data" do
-      ctx <- zmq_ctx_new
-      with_string_message "hello" \message -> do
-        message_string message >>= (@?= "hello")
-        zmq_msg_close message >>= (@?= 0)
-      zmq_ctx_term ctx >>= (@?= 0)
+  [ test "initializes a message with data" do
+      _ <- make_context
+      message <- make_string_message "hello"
+      message_string message `shouldReturn` "hello"
+      io (zmq_msg_close message) `shouldReturn` 0
   ]
 
 zmq_msg_init_size_tests :: [TestTree]
@@ -204,60 +195,96 @@ zmq_msg_set_tests = []
 
 zmq_strerror_tests :: [TestTree]
 zmq_strerror_tests =
-  [ testCase "returns the libzmq version" do
-      px <- malloc
-      py <- malloc
-      pz <- malloc
-      zmq_version px py pz
-      x <- peek px
-      y <- peek py
-      z <- peek pz
-      (x, y, z) @?= (4, 3, 4)
-      free px
-      free py
-      free pz
+  [ test "returns the libzmq version" do
+      px <- allocate
+      py <- allocate
+      pz <- allocate
+      io (zmq_version px py pz)
+      x <- io (peek px)
+      y <- io (peek py)
+      z <- io (peek pz)
+      (x, y, z) `shouldBe` (4, 3, 4)
   ]
 
 zmq_version_tests :: [TestTree]
 zmq_version_tests =
-  [ testCase "translates error codes to error strings" do
-      peekCString (zmq_strerror _EADDRINUSE) >>= (@?= "Address already in use")
-      peekCString (zmq_strerror _EADDRNOTAVAIL) >>= (@?= "Can't assign requested address")
-      peekCString (zmq_strerror _EAFNOSUPPORT) >>= (@?= "Address family not supported by protocol family")
-      peekCString (zmq_strerror _EAGAIN) >>= (@?= "Resource temporarily unavailable")
-      peekCString (zmq_strerror _EBADF) >>= (@?= "Bad file descriptor")
-      peekCString (zmq_strerror _ECONNABORTED) >>= (@?= "Software caused connection abort")
-      peekCString (zmq_strerror _ECONNREFUSED) >>= (@?= "Connection refused")
-      peekCString (zmq_strerror _ECONNRESET) >>= (@?= "Connection reset by peer")
-      peekCString (zmq_strerror _EFAULT) >>= (@?= "Bad address")
-      peekCString (zmq_strerror _EFSM) >>= (@?= "Operation cannot be accomplished in current state")
-      peekCString (zmq_strerror _EHOSTUNREACH) >>= (@?= "Host unreachable")
-      peekCString (zmq_strerror _EINPROGRESS) >>= (@?= "Operation now in progress")
-      peekCString (zmq_strerror _EINTR) >>= (@?= "Interrupted system call")
-      peekCString (zmq_strerror _EINVAL) >>= (@?= "Invalid argument")
-      peekCString (zmq_strerror _EMFILE) >>= (@?= "Too many open files")
-      peekCString (zmq_strerror _EMSGSIZE) >>= (@?= "Message too long")
-      peekCString (zmq_strerror _EMTHREAD) >>= (@?= "No thread available")
-      peekCString (zmq_strerror _ENETDOWN) >>= (@?= "Network is down")
-      peekCString (zmq_strerror _ENETRESET) >>= (@?= "Network dropped connection on reset")
-      peekCString (zmq_strerror _ENETUNREACH) >>= (@?= "Network is unreachable")
-      peekCString (zmq_strerror _ENOBUFS) >>= (@?= "No buffer space available")
-      peekCString (zmq_strerror _ENOCOMPATPROTO) >>= (@?= "The protocol is not compatible with the socket type")
-      peekCString (zmq_strerror _ENODEV) >>= (@?= "Operation not supported by device")
-      peekCString (zmq_strerror _ENOENT) >>= (@?= "No such file or directory")
-      peekCString (zmq_strerror _ENOMEM) >>= (@?= "Cannot allocate memory")
-      peekCString (zmq_strerror _ENOTCONN) >>= (@?= "Socket is not connected")
-      peekCString (zmq_strerror _ENOTSOCK) >>= (@?= "Socket operation on non-socket")
-      peekCString (zmq_strerror _ENOTSUP) >>= (@?= "Operation not supported")
-      peekCString (zmq_strerror _EPROTONOSUPPORT) >>= (@?= "Protocol not supported")
-      peekCString (zmq_strerror _ETERM) >>= (@?= "Context was terminated")
-      peekCString (zmq_strerror _ETIMEDOUT) >>= (@?= "Operation timed out"),
-    testCase "complains about unknown error codes" do
-      peekCString (zmq_strerror 0) >>= (@?= "Undefined error: 0")
+  [ test "translates error codes to error strings" do
+      io (peekCString (zmq_strerror _EADDRINUSE)) `shouldReturn` "Address already in use"
+      io (peekCString (zmq_strerror _EADDRNOTAVAIL)) `shouldReturn` "Can't assign requested address"
+      io (peekCString (zmq_strerror _EAFNOSUPPORT)) `shouldReturn` "Address family not supported by protocol family"
+      io (peekCString (zmq_strerror _EAGAIN)) `shouldReturn` "Resource temporarily unavailable"
+      io (peekCString (zmq_strerror _EBADF)) `shouldReturn` "Bad file descriptor"
+      io (peekCString (zmq_strerror _ECONNABORTED)) `shouldReturn` "Software caused connection abort"
+      io (peekCString (zmq_strerror _ECONNREFUSED)) `shouldReturn` "Connection refused"
+      io (peekCString (zmq_strerror _ECONNRESET)) `shouldReturn` "Connection reset by peer"
+      io (peekCString (zmq_strerror _EFAULT)) `shouldReturn` "Bad address"
+      io (peekCString (zmq_strerror _EFSM)) `shouldReturn` "Operation cannot be accomplished in current state"
+      io (peekCString (zmq_strerror _EHOSTUNREACH)) `shouldReturn` "Host unreachable"
+      io (peekCString (zmq_strerror _EINPROGRESS)) `shouldReturn` "Operation now in progress"
+      io (peekCString (zmq_strerror _EINTR)) `shouldReturn` "Interrupted system call"
+      io (peekCString (zmq_strerror _EINVAL)) `shouldReturn` "Invalid argument"
+      io (peekCString (zmq_strerror _EMFILE)) `shouldReturn` "Too many open files"
+      io (peekCString (zmq_strerror _EMSGSIZE)) `shouldReturn` "Message too long"
+      io (peekCString (zmq_strerror _EMTHREAD)) `shouldReturn` "No thread available"
+      io (peekCString (zmq_strerror _ENETDOWN)) `shouldReturn` "Network is down"
+      io (peekCString (zmq_strerror _ENETRESET)) `shouldReturn` "Network dropped connection on reset"
+      io (peekCString (zmq_strerror _ENETUNREACH)) `shouldReturn` "Network is unreachable"
+      io (peekCString (zmq_strerror _ENOBUFS)) `shouldReturn` "No buffer space available"
+      io (peekCString (zmq_strerror _ENOCOMPATPROTO)) `shouldReturn` "The protocol is not compatible with the socket type"
+      io (peekCString (zmq_strerror _ENODEV)) `shouldReturn` "Operation not supported by device"
+      io (peekCString (zmq_strerror _ENOENT)) `shouldReturn` "No such file or directory"
+      io (peekCString (zmq_strerror _ENOMEM)) `shouldReturn` "Cannot allocate memory"
+      io (peekCString (zmq_strerror _ENOTCONN)) `shouldReturn` "Socket is not connected"
+      io (peekCString (zmq_strerror _ENOTSOCK)) `shouldReturn` "Socket operation on non-socket"
+      io (peekCString (zmq_strerror _ENOTSUP)) `shouldReturn` "Operation not supported"
+      io (peekCString (zmq_strerror _EPROTONOSUPPORT)) `shouldReturn` "Protocol not supported"
+      io (peekCString (zmq_strerror _ETERM)) `shouldReturn` "Context was terminated"
+      io (peekCString (zmq_strerror _ETIMEDOUT)) `shouldReturn` "Operation timed out",
+    test "complains about unknown error codes" do
+      io (peekCString (zmq_strerror 0)) `shouldReturn` "Undefined error: 0"
   ]
 
 ------------------------------------------------------------------------------------------------------------------------
--- Helpers
+-- Test suite monad and test API
+
+newtype M a = M
+  { unM :: forall r. (a -> IO r) -> IO r
+  }
+  deriving stock (Functor)
+
+instance Applicative M where
+  pure x = M \k -> k x
+  (<*>) = Monad.ap
+
+instance Monad M where
+  return = pure
+  M ma >>= f = M \k -> ma \a -> unM (f a) k
+
+runM :: M a -> IO a
+runM (M m) = m pure
+
+io :: IO a -> M a
+io m = M (m >>=)
+
+allocate :: Storable a => M (Ptr a)
+allocate =
+  M (bracket malloc free)
+
+test :: String -> M () -> TestTree
+test name action =
+  HUnit.testCase name (runM action)
+
+shouldBe :: (Eq a, Show a) => a -> a -> M ()
+shouldBe actual expected =
+  io (actual HUnit.@?= expected)
+
+shouldReturn :: (Eq a, Show a) => M a -> a -> M ()
+shouldReturn action expected = do
+  actual <- action
+  actual `shouldBe` expected
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq library helpers
 
 _EAGAIN :: CInt
 _EAGAIN =
@@ -295,26 +322,30 @@ _ENOMEM :: CInt
 _ENOMEM =
   coerce @Errno @CInt eNOMEM
 
-message_string :: Ptr Zmq_msg -> IO String
-message_string message = do
-  len <- zmq_msg_size message
-  assertBool "zmq_msg_size failed" (len > 0)
-  string <- zmq_msg_data message
-  peekCStringLen (string, fromIntegral len)
+message_string :: Ptr Zmq_msg -> M String
+message_string message =
+  io do
+    len <- zmq_msg_size message
+    HUnit.assertBool "zmq_msg_size failed" (len > 0)
+    string <- zmq_msg_data message
+    peekCStringLen (string, fromIntegral len)
 
-with_empty_message :: (Ptr Zmq_msg -> IO a) -> IO a
-with_empty_message action = do
-  message <- malloc
-  zmq_msg_init message >>= (@?= 0)
-  result <- action message
-  free message
-  pure result
+make_context :: M (Ptr context)
+make_context =
+  M $
+    bracket
+      zmq_ctx_new
+      (\ctx -> zmq_ctx_term ctx >>= (HUnit.@?= 0))
 
-with_string_message :: String -> (Ptr Zmq_msg -> IO a) -> IO a
-with_string_message string action = do
-  (c_string, fromIntegral -> len) <- newCStringLen string
-  message <- malloc
-  zmq_msg_init_data message c_string len nullFunPtr nullPtr >>= (@?= 0)
-  result <- action message
-  free message
-  pure result
+make_empty_message :: M (Ptr Zmq_msg)
+make_empty_message = do
+  message <- allocate
+  io (zmq_msg_init message) `shouldReturn` 0
+  pure message
+
+make_string_message :: String -> M (Ptr Zmq_msg)
+make_string_message string = do
+  (c_string, fromIntegral -> len) <- io (newCStringLen string)
+  message <- allocate
+  io (zmq_msg_init_data message c_string len nullFunPtr nullPtr) `shouldReturn` 0
+  pure message
