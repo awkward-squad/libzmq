@@ -3,7 +3,7 @@ module Main (main) where
 import Control.Exception (bracket)
 import Control.Monad qualified as Monad
 import Data.Coerce (coerce)
-import Foreign (Ptr, Storable, free, malloc, nullFunPtr, nullPtr, peek)
+import Foreign (Ptr, Storable, free, malloc, nullFunPtr, nullPtr, peek, sizeOf)
 import Foreign.C
   ( CInt,
     Errno (..),
@@ -53,38 +53,30 @@ tests =
 
 zmq_ctx_get_tests :: [TestTree]
 zmq_ctx_get_tests =
-  [ -- test "gets the number of IO threads" do
-    -- ctx <- zmq_ctx_new
-    -- zmq_ctx_get ctx _ZMQ_IO_THREADS >>= (@?= _ZMQ_IO_THREADS_DFLT)
-    -- zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets the max number of sockets" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_MAX_SOCKETS >>= (@?= _ZMQ_MAX_SOCKETS_DFLT)
-    --   zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets the max configurable number of sockets" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_SOCKET_LIMIT >>= (@?= 65535)
-    --   zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets IPv6" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_IPV6 >>= (@?= 0)
-    --   zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets blocky" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_BLOCKY >>= (@?= 1)
-    --   zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets the thread scheduling policy" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_THREAD_SCHED_POLICY >>= (@?= _ZMQ_THREAD_SCHED_POLICY_DFLT)
-    --   zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets the thread name prefix" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_THREAD_NAME_PREFIX >>= (@?= 0)
-    --   zmq_ctx_term ctx >>= (@?= 0),
-    -- testCase "gets the size of a zmq_msg_t" do
-    --   ctx <- zmq_ctx_new
-    --   zmq_ctx_get ctx _ZMQ_MSG_T_SIZE >>= (@?= fromIntegral @Int @CInt (sizeOf (undefined :: Zmq_msg)))
-    --   zmq_ctx_term ctx >>= (@?= 0),
+  [ test "gets the number of IO threads" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_IO_THREADS) `shouldReturn` _ZMQ_IO_THREADS_DFLT,
+    test "gets the max number of sockets" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_MAX_SOCKETS) `shouldReturn` _ZMQ_MAX_SOCKETS_DFLT,
+    test "gets the max configurable number of sockets" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_SOCKET_LIMIT) `shouldReturn` 65535,
+    test "gets IPv6" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_IPV6) `shouldReturn` 0,
+    test "gets blocky" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_BLOCKY) `shouldReturn` 1,
+    test "gets the thread scheduling policy" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_THREAD_SCHED_POLICY) `shouldReturn` _ZMQ_THREAD_SCHED_POLICY_DFLT,
+    test "gets the thread name prefix" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_THREAD_NAME_PREFIX) `shouldReturn` 0,
+    test "gets the size of a zmq_msg_t" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx _ZMQ_MSG_T_SIZE) `shouldReturn` fromIntegral @Int @CInt (sizeOf (undefined :: Zmq_msg)),
     test "returns EINVAL on bogus option" do
       ctx <- make_context
       io (zmq_ctx_get ctx 12345) `shouldReturn` (-1)
