@@ -34,58 +34,31 @@ instance Show Zmq_ctx_option where
     ZMQ_THREAD_SCHED_POLICY -> "ZMQ_THREAD_SCHED_POLICY"
 
 pattern ZMQ_BLOCKY :: Zmq_ctx_option
-pattern ZMQ_BLOCKY <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_BLOCKY) -> True)
-  where
-    ZMQ_BLOCKY = Zmq_ctx_option Libzmq.Bindings._ZMQ_BLOCKY
+pattern ZMQ_BLOCKY = Zmq_ctx_option Libzmq.Bindings.ZMQ_BLOCKY
 
 pattern ZMQ_IO_THREADS :: Zmq_ctx_option
-pattern ZMQ_IO_THREADS <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_IO_THREADS) -> True)
-  where
-    ZMQ_IO_THREADS = Zmq_ctx_option Libzmq.Bindings._ZMQ_IO_THREADS
+pattern ZMQ_IO_THREADS = Zmq_ctx_option Libzmq.Bindings.ZMQ_IO_THREADS
 
 pattern ZMQ_IPV6 :: Zmq_ctx_option
-pattern ZMQ_IPV6 <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_IPV6) -> True)
-  where
-    ZMQ_IPV6 = Zmq_ctx_option Libzmq.Bindings._ZMQ_IPV6
+pattern ZMQ_IPV6 = Zmq_ctx_option Libzmq.Bindings.ZMQ_IPV6
 
 pattern ZMQ_MAX_MSGSZ :: Zmq_ctx_option
-pattern ZMQ_MAX_MSGSZ <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_MAX_MSGSZ) -> True)
-  where
-    ZMQ_MAX_MSGSZ = Zmq_ctx_option Libzmq.Bindings._ZMQ_MAX_MSGSZ
+pattern ZMQ_MAX_MSGSZ = Zmq_ctx_option Libzmq.Bindings.ZMQ_MAX_MSGSZ
 
 pattern ZMQ_MAX_SOCKETS :: Zmq_ctx_option
-pattern ZMQ_MAX_SOCKETS <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_MAX_SOCKETS) -> True)
-  where
-    ZMQ_MAX_SOCKETS = Zmq_ctx_option Libzmq.Bindings._ZMQ_MAX_SOCKETS
+pattern ZMQ_MAX_SOCKETS = Zmq_ctx_option Libzmq.Bindings.ZMQ_MAX_SOCKETS
 
 pattern ZMQ_MSG_T_SIZE :: Zmq_ctx_option
-pattern ZMQ_MSG_T_SIZE <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_MSG_T_SIZE) -> True)
-  where
-    ZMQ_MSG_T_SIZE = Zmq_ctx_option Libzmq.Bindings._ZMQ_MSG_T_SIZE
+pattern ZMQ_MSG_T_SIZE = Zmq_ctx_option Libzmq.Bindings.ZMQ_MSG_T_SIZE
 
 pattern ZMQ_SOCKET_LIMIT :: Zmq_ctx_option
-pattern ZMQ_SOCKET_LIMIT <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_SOCKET_LIMIT) -> True)
-  where
-    ZMQ_SOCKET_LIMIT = Zmq_ctx_option Libzmq.Bindings._ZMQ_SOCKET_LIMIT
+pattern ZMQ_SOCKET_LIMIT = Zmq_ctx_option Libzmq.Bindings.ZMQ_SOCKET_LIMIT
 
 pattern ZMQ_THREAD_NAME_PREFIX :: Zmq_ctx_option
-pattern ZMQ_THREAD_NAME_PREFIX <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_THREAD_NAME_PREFIX) -> True)
-  where
-    ZMQ_THREAD_NAME_PREFIX = Zmq_ctx_option Libzmq.Bindings._ZMQ_THREAD_NAME_PREFIX
+pattern ZMQ_THREAD_NAME_PREFIX = Zmq_ctx_option Libzmq.Bindings.ZMQ_THREAD_NAME_PREFIX
 
 pattern ZMQ_THREAD_SCHED_POLICY :: Zmq_ctx_option
-pattern ZMQ_THREAD_SCHED_POLICY <-
-  ((== Zmq_ctx_option Libzmq.Bindings._ZMQ_THREAD_SCHED_POLICY) -> True)
-  where
-    ZMQ_THREAD_SCHED_POLICY = Zmq_ctx_option Libzmq.Bindings._ZMQ_THREAD_SCHED_POLICY
+pattern ZMQ_THREAD_SCHED_POLICY = Zmq_ctx_option Libzmq.Bindings.ZMQ_THREAD_SCHED_POLICY
 
 {-# COMPLETE
   ZMQ_BLOCKY,
@@ -144,52 +117,28 @@ instance Show Zmq_error where
     ETIMEDOUT -> "ETIMEDOUT"
 
 pattern EADDRINUSE :: Zmq_error
-pattern EADDRINUSE <-
-  ((== Zmq_error Libzmq.Bindings._EADDRINUSE) -> True)
-  where
-    EADDRINUSE = Zmq_error Libzmq.Bindings._EADDRINUSE
+pattern EADDRINUSE = Zmq_error Libzmq.Bindings.EADDRINUSE
 
 pattern EADDRNOTAVAIL :: Zmq_error
-pattern EADDRNOTAVAIL <-
-  ((== Zmq_error Libzmq.Bindings._EADDRNOTAVAIL) -> True)
-  where
-    EADDRNOTAVAIL = Zmq_error Libzmq.Bindings._EADDRNOTAVAIL
+pattern EADDRNOTAVAIL = Zmq_error Libzmq.Bindings.EADDRNOTAVAIL
 
 pattern EAFNOSUPPORT :: Zmq_error
-pattern EAFNOSUPPORT <-
-  ((== Zmq_error Libzmq.Bindings._EAFNOSUPPORT) -> True)
-  where
-    EAFNOSUPPORT = Zmq_error Libzmq.Bindings._EAFNOSUPPORT
+pattern EAFNOSUPPORT = Zmq_error Libzmq.Bindings.EAFNOSUPPORT
 
 pattern EAGAIN :: Zmq_error
-pattern EAGAIN <-
-  ((== Zmq_error (coerce @Errno @CInt eAGAIN)) -> True)
-  where
-    EAGAIN = Zmq_error (coerce @Errno @CInt eAGAIN)
+pattern EAGAIN = Zmq_error Libzmq.Bindings.EAGAIN
 
 pattern EBADF :: Zmq_error
-pattern EBADF <-
-  ((== Zmq_error (coerce @Errno @CInt eBADF)) -> True)
-  where
-    EBADF = Zmq_error (coerce @Errno @CInt eBADF)
+pattern EBADF = Zmq_error Libzmq.Bindings.EBADF
 
 pattern ECONNABORTED :: Zmq_error
-pattern ECONNABORTED <-
-  ((== Zmq_error Libzmq.Bindings._ECONNABORTED) -> True)
-  where
-    ECONNABORTED = Zmq_error Libzmq.Bindings._ECONNABORTED
+pattern ECONNABORTED = Zmq_error Libzmq.Bindings.ECONNABORTED
 
 pattern ECONNREFUSED :: Zmq_error
-pattern ECONNREFUSED <-
-  ((== Zmq_error Libzmq.Bindings._ECONNREFUSED) -> True)
-  where
-    ECONNREFUSED = Zmq_error Libzmq.Bindings._ECONNREFUSED
+pattern ECONNREFUSED = Zmq_error Libzmq.Bindings.ECONNREFUSED
 
 pattern ECONNRESET :: Zmq_error
-pattern ECONNRESET <-
-  ((== Zmq_error Libzmq.Bindings._ECONNRESET) -> True)
-  where
-    ECONNRESET = Zmq_error Libzmq.Bindings._ECONNRESET
+pattern ECONNRESET = Zmq_error Libzmq.Bindings.ECONNRESET
 
 pattern EFAULT :: Zmq_error
 pattern EFAULT <-
@@ -198,22 +147,13 @@ pattern EFAULT <-
     EFAULT = Zmq_error (coerce @Errno @CInt eFAULT)
 
 pattern EFSM :: Zmq_error
-pattern EFSM <-
-  ((== Zmq_error Libzmq.Bindings._EFSM) -> True)
-  where
-    EFSM = Zmq_error Libzmq.Bindings._EFSM
+pattern EFSM = Zmq_error Libzmq.Bindings.EFSM
 
 pattern EHOSTUNREACH :: Zmq_error
-pattern EHOSTUNREACH <-
-  ((== Zmq_error Libzmq.Bindings._EHOSTUNREACH) -> True)
-  where
-    EHOSTUNREACH = Zmq_error Libzmq.Bindings._EHOSTUNREACH
+pattern EHOSTUNREACH = Zmq_error Libzmq.Bindings.EHOSTUNREACH
 
 pattern EINPROGRESS :: Zmq_error
-pattern EINPROGRESS <-
-  ((== Zmq_error Libzmq.Bindings._EINPROGRESS) -> True)
-  where
-    EINPROGRESS = Zmq_error Libzmq.Bindings._EINPROGRESS
+pattern EINPROGRESS = Zmq_error Libzmq.Bindings.EINPROGRESS
 
 pattern EINTR :: Zmq_error
 pattern EINTR <-
@@ -234,46 +174,25 @@ pattern EMFILE <-
     EMFILE = Zmq_error (coerce @Errno @CInt eMFILE)
 
 pattern EMSGSIZE :: Zmq_error
-pattern EMSGSIZE <-
-  ((== Zmq_error Libzmq.Bindings._EMSGSIZE) -> True)
-  where
-    EMSGSIZE = Zmq_error Libzmq.Bindings._EMSGSIZE
+pattern EMSGSIZE = Zmq_error Libzmq.Bindings.EMSGSIZE
 
 pattern EMTHREAD :: Zmq_error
-pattern EMTHREAD <-
-  ((== Zmq_error Libzmq.Bindings._EMTHREAD) -> True)
-  where
-    EMTHREAD = Zmq_error Libzmq.Bindings._EMTHREAD
+pattern EMTHREAD = Zmq_error Libzmq.Bindings.EMTHREAD
 
 pattern ENETDOWN :: Zmq_error
-pattern ENETDOWN <-
-  ((== Zmq_error Libzmq.Bindings._ENETDOWN) -> True)
-  where
-    ENETDOWN = Zmq_error Libzmq.Bindings._ENETDOWN
+pattern ENETDOWN = Zmq_error Libzmq.Bindings.ENETDOWN
 
 pattern ENETRESET :: Zmq_error
-pattern ENETRESET <-
-  ((== Zmq_error Libzmq.Bindings._ENETRESET) -> True)
-  where
-    ENETRESET = Zmq_error Libzmq.Bindings._ENETRESET
+pattern ENETRESET = Zmq_error Libzmq.Bindings.ENETRESET
 
 pattern ENETUNREACH :: Zmq_error
-pattern ENETUNREACH <-
-  ((== Zmq_error Libzmq.Bindings._ENETUNREACH) -> True)
-  where
-    ENETUNREACH = Zmq_error Libzmq.Bindings._ENETUNREACH
+pattern ENETUNREACH = Zmq_error Libzmq.Bindings.ENETUNREACH
 
 pattern ENOBUFS :: Zmq_error
-pattern ENOBUFS <-
-  ((== Zmq_error Libzmq.Bindings._ENOBUFS) -> True)
-  where
-    ENOBUFS = Zmq_error Libzmq.Bindings._ENOBUFS
+pattern ENOBUFS = Zmq_error Libzmq.Bindings.ENOBUFS
 
 pattern ENOCOMPATPROTO :: Zmq_error
-pattern ENOCOMPATPROTO <-
-  ((== Zmq_error Libzmq.Bindings._ENOCOMPATPROTO) -> True)
-  where
-    ENOCOMPATPROTO = Zmq_error Libzmq.Bindings._ENOCOMPATPROTO
+pattern ENOCOMPATPROTO = Zmq_error Libzmq.Bindings.ENOCOMPATPROTO
 
 pattern ENODEV :: Zmq_error
 pattern ENODEV <-
@@ -294,40 +213,22 @@ pattern ENOMEM <-
     ENOMEM = Zmq_error (coerce @Errno @CInt eNOMEM)
 
 pattern ENOTCONN :: Zmq_error
-pattern ENOTCONN <-
-  ((== Zmq_error Libzmq.Bindings._ENOTCONN) -> True)
-  where
-    ENOTCONN = Zmq_error Libzmq.Bindings._ENOTCONN
+pattern ENOTCONN = Zmq_error Libzmq.Bindings.ENOTCONN
 
 pattern ENOTSOCK :: Zmq_error
-pattern ENOTSOCK <-
-  ((== Zmq_error Libzmq.Bindings._ENOTSOCK) -> True)
-  where
-    ENOTSOCK = Zmq_error Libzmq.Bindings._ENOTSOCK
+pattern ENOTSOCK = Zmq_error Libzmq.Bindings.ENOTSOCK
 
 pattern ENOTSUP :: Zmq_error
-pattern ENOTSUP <-
-  ((== Zmq_error Libzmq.Bindings._ENOTSUP) -> True)
-  where
-    ENOTSUP = Zmq_error Libzmq.Bindings._ENOTSUP
+pattern ENOTSUP = Zmq_error Libzmq.Bindings.ENOTSUP
 
 pattern EPROTONOSUPPORT :: Zmq_error
-pattern EPROTONOSUPPORT <-
-  ((== Zmq_error Libzmq.Bindings._EPROTONOSUPPORT) -> True)
-  where
-    EPROTONOSUPPORT = Zmq_error Libzmq.Bindings._EPROTONOSUPPORT
+pattern EPROTONOSUPPORT = Zmq_error Libzmq.Bindings.EPROTONOSUPPORT
 
 pattern ETERM :: Zmq_error
-pattern ETERM <-
-  ((== Zmq_error Libzmq.Bindings._ETERM) -> True)
-  where
-    ETERM = Zmq_error Libzmq.Bindings._ETERM
+pattern ETERM = Zmq_error Libzmq.Bindings.ETERM
 
 pattern ETIMEDOUT :: Zmq_error
-pattern ETIMEDOUT <-
-  ((== Zmq_error Libzmq.Bindings._ETIMEDOUT) -> True)
-  where
-    ETIMEDOUT = Zmq_error Libzmq.Bindings._ETIMEDOUT
+pattern ETIMEDOUT = Zmq_error Libzmq.Bindings.ETIMEDOUT
 
 {-# COMPLETE
   EADDRINUSE,
@@ -393,41 +294,41 @@ pattern ZMQ_POLLIN :: Zmq_events
 pattern ZMQ_POLLIN <-
   (hasPollin -> True)
   where
-    ZMQ_POLLIN = Zmq_events Libzmq.Bindings._ZMQ_POLLIN
+    ZMQ_POLLIN = Zmq_events Libzmq.Bindings.ZMQ_POLLIN
 
 pattern ZMQ_POLLOUT :: Zmq_events
 pattern ZMQ_POLLOUT <-
   (hasPollout -> True)
   where
-    ZMQ_POLLOUT = Zmq_events Libzmq.Bindings._ZMQ_POLLOUT
+    ZMQ_POLLOUT = Zmq_events Libzmq.Bindings.ZMQ_POLLOUT
 
 pattern ZMQ_POLLERR :: Zmq_events
 pattern ZMQ_POLLERR <-
   (hasPollerr -> True)
   where
-    ZMQ_POLLERR = Zmq_events Libzmq.Bindings._ZMQ_POLLERR
+    ZMQ_POLLERR = Zmq_events Libzmq.Bindings.ZMQ_POLLERR
 
 pattern ZMQ_POLLPRI :: Zmq_events
 pattern ZMQ_POLLPRI <-
   (hasPollpri -> True)
   where
-    ZMQ_POLLPRI = Zmq_events Libzmq.Bindings._ZMQ_POLLPRI
+    ZMQ_POLLPRI = Zmq_events Libzmq.Bindings.ZMQ_POLLPRI
 
 hasPollin :: Zmq_events -> Bool
 hasPollin (Zmq_events n) =
-  n .&. Libzmq.Bindings._ZMQ_POLLIN /= 0
+  n .&. Libzmq.Bindings.ZMQ_POLLIN /= 0
 
 hasPollout :: Zmq_events -> Bool
 hasPollout (Zmq_events n) =
-  n .&. Libzmq.Bindings._ZMQ_POLLOUT /= 0
+  n .&. Libzmq.Bindings.ZMQ_POLLOUT /= 0
 
 hasPollerr :: Zmq_events -> Bool
 hasPollerr (Zmq_events n) =
-  n .&. Libzmq.Bindings._ZMQ_POLLERR /= 0
+  n .&. Libzmq.Bindings.ZMQ_POLLERR /= 0
 
 hasPollpri :: Zmq_events -> Bool
 hasPollpri (Zmq_events n) =
-  n .&. Libzmq.Bindings._ZMQ_POLLPRI /= 0
+  n .&. Libzmq.Bindings.ZMQ_POLLPRI /= 0
 
 -- | A ØMQ message option.
 newtype Zmq_msg_option
@@ -440,16 +341,10 @@ instance Show Zmq_msg_option where
     ZMQ_SHARED -> "ZMQ_SHARED"
 
 pattern ZMQ_MORE :: Zmq_msg_option
-pattern ZMQ_MORE <-
-  ((== Zmq_msg_option Libzmq.Bindings._ZMQ_MORE) -> True)
-  where
-    ZMQ_MORE = Zmq_msg_option Libzmq.Bindings._ZMQ_MORE
+pattern ZMQ_MORE = Zmq_msg_option Libzmq.Bindings.ZMQ_MORE
 
 pattern ZMQ_SHARED :: Zmq_msg_option
-pattern ZMQ_SHARED <-
-  ((== Zmq_msg_option Libzmq.Bindings._ZMQ_SHARED) -> True)
-  where
-    ZMQ_SHARED = Zmq_msg_option Libzmq.Bindings._ZMQ_SHARED
+pattern ZMQ_SHARED = Zmq_msg_option Libzmq.Bindings.ZMQ_SHARED
 
 {-# COMPLETE
   ZMQ_MORE,
@@ -531,130 +426,67 @@ instance Show Zmq_protocol_error where
     Zmq_protocol_error n -> "Zmq_protocol_error " ++ show n
 
 pattern ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED
+pattern ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_WS_UNSPECIFIED
 
 pattern ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID
+pattern ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZAP_BAD_REQUEST_ID
 
 pattern ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION
+pattern ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZAP_BAD_VERSION
 
 pattern ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA
+pattern ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZAP_INVALID_METADATA
 
 pattern ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE
+pattern ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZAP_INVALID_STATUS_CODE
 
 pattern ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY
+pattern ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZAP_MALFORMED_REPLY
 
 pattern ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED
+pattern ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZAP_UNSPECIFIED
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_CRYPTOGRAPHIC
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_METADATA
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_INVALID_SEQUENCE
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_KEY_EXCHANGE
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_ERROR
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_HELLO
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_INITIATE
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_MESSAGE
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_READY
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_UNSPECIFIED
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MALFORMED_COMMAND_WELCOME
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_MECHANISM_MISMATCH
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND
 
 pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED :: Zmq_protocol_error
-pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED <-
-  ((== Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED) -> True)
-  where
-    ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings._ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED
+pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings.ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED
 
 -- COMPLETE pragma intentionally missing for forward-compatibility
 -- Users' programs should be allowed to use _ pattern to mean "the errors that were invented after I wrote this"
@@ -687,21 +519,21 @@ pattern ZMQ_DONTWAIT :: Zmq_send_option
 pattern ZMQ_DONTWAIT <-
   (hasDontwait -> True)
   where
-    ZMQ_DONTWAIT = Zmq_send_option Libzmq.Bindings._ZMQ_DONTWAIT
+    ZMQ_DONTWAIT = Zmq_send_option Libzmq.Bindings.ZMQ_DONTWAIT
 
 pattern ZMQ_SNDMORE :: Zmq_send_option
 pattern ZMQ_SNDMORE <-
   (hasSndmore -> True)
   where
-    ZMQ_SNDMORE = Zmq_send_option Libzmq.Bindings._ZMQ_SNDMORE
+    ZMQ_SNDMORE = Zmq_send_option Libzmq.Bindings.ZMQ_SNDMORE
 
 hasDontwait :: Zmq_send_option -> Bool
 hasDontwait (Zmq_send_option n) =
-  n .&. Libzmq.Bindings._ZMQ_DONTWAIT /= 0
+  n .&. Libzmq.Bindings.ZMQ_DONTWAIT /= 0
 
 hasSndmore :: Zmq_send_option -> Bool
 hasSndmore (Zmq_send_option n) =
-  n .&. Libzmq.Bindings._ZMQ_SNDMORE /= 0
+  n .&. Libzmq.Bindings.ZMQ_SNDMORE /= 0
 
 -- | A ØMQ socket.
 newtype Zmq_socket
@@ -752,167 +584,119 @@ instance Show Zmq_socket_events where
         events -> unwords events
 
 pattern ZMQ_EVENT_ACCEPTED :: Zmq_socket_events
-pattern ZMQ_EVENT_ACCEPTED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_ACCEPTED) -> True)
-  where
-    ZMQ_EVENT_ACCEPTED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_ACCEPTED
+pattern ZMQ_EVENT_ACCEPTED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_ACCEPTED
 
 pattern ZMQ_EVENT_ACCEPT_FAILED :: Zmq_socket_events
-pattern ZMQ_EVENT_ACCEPT_FAILED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_ACCEPT_FAILED) -> True)
-  where
-    ZMQ_EVENT_ACCEPT_FAILED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_ACCEPT_FAILED
+pattern ZMQ_EVENT_ACCEPT_FAILED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_ACCEPT_FAILED
 
 pattern ZMQ_EVENT_ALL :: Zmq_socket_events
-pattern ZMQ_EVENT_ALL <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_ALL) -> True)
-  where
-    ZMQ_EVENT_ALL = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_ALL
+pattern ZMQ_EVENT_ALL = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_ALL
 
 pattern ZMQ_EVENT_BIND_FAILED :: Zmq_socket_events
-pattern ZMQ_EVENT_BIND_FAILED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_BIND_FAILED) -> True)
-  where
-    ZMQ_EVENT_BIND_FAILED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_BIND_FAILED
+pattern ZMQ_EVENT_BIND_FAILED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_BIND_FAILED
 
 pattern ZMQ_EVENT_CLOSED :: Zmq_socket_events
-pattern ZMQ_EVENT_CLOSED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CLOSED) -> True)
-  where
-    ZMQ_EVENT_CLOSED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CLOSED
+pattern ZMQ_EVENT_CLOSED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_CLOSED
 
 pattern ZMQ_EVENT_CLOSE_FAILED :: Zmq_socket_events
-pattern ZMQ_EVENT_CLOSE_FAILED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CLOSE_FAILED) -> True)
-  where
-    ZMQ_EVENT_CLOSE_FAILED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CLOSE_FAILED
+pattern ZMQ_EVENT_CLOSE_FAILED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_CLOSE_FAILED
 
 pattern ZMQ_EVENT_CONNECTED :: Zmq_socket_events
-pattern ZMQ_EVENT_CONNECTED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CONNECTED) -> True)
-  where
-    ZMQ_EVENT_CONNECTED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CONNECTED
+pattern ZMQ_EVENT_CONNECTED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_CONNECTED
 
 pattern ZMQ_EVENT_CONNECT_DELAYED :: Zmq_socket_events
-pattern ZMQ_EVENT_CONNECT_DELAYED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CONNECT_DELAYED) -> True)
-  where
-    ZMQ_EVENT_CONNECT_DELAYED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CONNECT_DELAYED
+pattern ZMQ_EVENT_CONNECT_DELAYED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_CONNECT_DELAYED
 
 pattern ZMQ_EVENT_CONNECT_RETRIED :: Zmq_socket_events
-pattern ZMQ_EVENT_CONNECT_RETRIED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CONNECT_RETRIED) -> True)
-  where
-    ZMQ_EVENT_CONNECT_RETRIED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_CONNECT_RETRIED
+pattern ZMQ_EVENT_CONNECT_RETRIED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_CONNECT_RETRIED
 
 pattern ZMQ_EVENT_DISCONNECTED :: Zmq_socket_events
-pattern ZMQ_EVENT_DISCONNECTED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_DISCONNECTED) -> True)
-  where
-    ZMQ_EVENT_DISCONNECTED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_DISCONNECTED
+pattern ZMQ_EVENT_DISCONNECTED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_DISCONNECTED
 
 pattern ZMQ_EVENT_HANDSHAKE_FAILED_AUTH :: Zmq_socket_events
-pattern ZMQ_EVENT_HANDSHAKE_FAILED_AUTH <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_AUTH) -> True)
-  where
-    ZMQ_EVENT_HANDSHAKE_FAILED_AUTH = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_AUTH
+pattern ZMQ_EVENT_HANDSHAKE_FAILED_AUTH = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_FAILED_AUTH
 
 pattern ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL :: Zmq_socket_events
-pattern ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL) -> True)
-  where
-    ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL
+pattern ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL
 
 pattern ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL :: Zmq_socket_events
-pattern ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL) -> True)
-  where
-    ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL
+pattern ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL
 
 pattern ZMQ_EVENT_HANDSHAKE_SUCCEEDED :: Zmq_socket_events
-pattern ZMQ_EVENT_HANDSHAKE_SUCCEEDED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_SUCCEEDED) -> True)
-  where
-    ZMQ_EVENT_HANDSHAKE_SUCCEEDED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_SUCCEEDED
+pattern ZMQ_EVENT_HANDSHAKE_SUCCEEDED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_SUCCEEDED
 
 pattern ZMQ_EVENT_LISTENING :: Zmq_socket_events
-pattern ZMQ_EVENT_LISTENING <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_LISTENING) -> True)
-  where
-    ZMQ_EVENT_LISTENING = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_LISTENING
+pattern ZMQ_EVENT_LISTENING = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_LISTENING
 
 pattern ZMQ_EVENT_MONITOR_STOPPED :: Zmq_socket_events
-pattern ZMQ_EVENT_MONITOR_STOPPED <-
-  ((== Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_MONITOR_STOPPED) -> True)
-  where
-    ZMQ_EVENT_MONITOR_STOPPED = Zmq_socket_events Libzmq.Bindings._ZMQ_EVENT_MONITOR_STOPPED
+pattern ZMQ_EVENT_MONITOR_STOPPED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_MONITOR_STOPPED
 
 -- COMPLETE pragma intentionally missing for forward-compatibility
 -- Users' programs should be allowed to use _ pattern to mean "the events that were invented after I wrote this"
 
 hasAccepted :: Zmq_socket_events -> Bool
 hasAccepted (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_ACCEPTED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_ACCEPTED /= 0
 
 hasAcceptFailed :: Zmq_socket_events -> Bool
 hasAcceptFailed (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_ACCEPT_FAILED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_ACCEPT_FAILED /= 0
 
 hasAll :: Zmq_socket_events -> Bool
 hasAll (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_ALL /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_ALL /= 0
 
 hasBindFailed :: Zmq_socket_events -> Bool
 hasBindFailed (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_BIND_FAILED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_BIND_FAILED /= 0
 
 hasClosed :: Zmq_socket_events -> Bool
 hasClosed (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_CLOSED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_CLOSED /= 0
 
 hasCloseFailed :: Zmq_socket_events -> Bool
 hasCloseFailed (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_CLOSE_FAILED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_CLOSE_FAILED /= 0
 
 hasConnected :: Zmq_socket_events -> Bool
 hasConnected (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_CONNECTED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_CONNECTED /= 0
 
 hasConnectDelayed :: Zmq_socket_events -> Bool
 hasConnectDelayed (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_CONNECT_DELAYED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_CONNECT_DELAYED /= 0
 
 hasConnectRetried :: Zmq_socket_events -> Bool
 hasConnectRetried (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_CONNECT_RETRIED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_CONNECT_RETRIED /= 0
 
 hasDisconnected :: Zmq_socket_events -> Bool
 hasDisconnected (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_DISCONNECTED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_DISCONNECTED /= 0
 
 hasHandshakeFailedAuth :: Zmq_socket_events -> Bool
 hasHandshakeFailedAuth (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_AUTH /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_FAILED_AUTH /= 0
 
 hasHandshakeFailedNoDetail :: Zmq_socket_events -> Bool
 hasHandshakeFailedNoDetail (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL /= 0
 
 hasHandshakeFailedProtocol :: Zmq_socket_events -> Bool
 hasHandshakeFailedProtocol (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL /= 0
 
 hasHandshakeSucceeded :: Zmq_socket_events -> Bool
 hasHandshakeSucceeded (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_HANDSHAKE_SUCCEEDED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_HANDSHAKE_SUCCEEDED /= 0
 
 hasListening :: Zmq_socket_events -> Bool
 hasListening (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_LISTENING /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_LISTENING /= 0
 
 hasMonitorStopped :: Zmq_socket_events -> Bool
 hasMonitorStopped (Zmq_socket_events n) =
-  n .&. Libzmq.Bindings._ZMQ_EVENT_MONITOR_STOPPED /= 0
+  n .&. Libzmq.Bindings.ZMQ_EVENT_MONITOR_STOPPED /= 0
 
 -- | A ØMQ socket option.
 data Zmq_socket_option a where
@@ -1009,76 +793,40 @@ instance Show Zmq_socket_type where
     ZMQ_XSUB -> "ZMQ_XSUB"
 
 pattern ZMQ_DEALER :: Zmq_socket_type
-pattern ZMQ_DEALER <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_DEALER) -> True)
-  where
-    ZMQ_DEALER = Zmq_socket_type Libzmq.Bindings._ZMQ_DEALER
+pattern ZMQ_DEALER = Zmq_socket_type Libzmq.Bindings.ZMQ_DEALER
 
 pattern ZMQ_PAIR :: Zmq_socket_type
-pattern ZMQ_PAIR <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_PAIR) -> True)
-  where
-    ZMQ_PAIR = Zmq_socket_type Libzmq.Bindings._ZMQ_PAIR
+pattern ZMQ_PAIR = Zmq_socket_type Libzmq.Bindings.ZMQ_PAIR
 
 pattern ZMQ_PUB :: Zmq_socket_type
-pattern ZMQ_PUB <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_PUB) -> True)
-  where
-    ZMQ_PUB = Zmq_socket_type Libzmq.Bindings._ZMQ_PUB
+pattern ZMQ_PUB = Zmq_socket_type Libzmq.Bindings.ZMQ_PUB
 
 pattern ZMQ_PULL :: Zmq_socket_type
-pattern ZMQ_PULL <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_PULL) -> True)
-  where
-    ZMQ_PULL = Zmq_socket_type Libzmq.Bindings._ZMQ_PULL
+pattern ZMQ_PULL = Zmq_socket_type Libzmq.Bindings.ZMQ_PULL
 
 pattern ZMQ_PUSH :: Zmq_socket_type
-pattern ZMQ_PUSH <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_PUSH) -> True)
-  where
-    ZMQ_PUSH = Zmq_socket_type Libzmq.Bindings._ZMQ_PUSH
+pattern ZMQ_PUSH = Zmq_socket_type Libzmq.Bindings.ZMQ_PUSH
 
 pattern ZMQ_REP :: Zmq_socket_type
-pattern ZMQ_REP <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_REP) -> True)
-  where
-    ZMQ_REP = Zmq_socket_type Libzmq.Bindings._ZMQ_REP
+pattern ZMQ_REP = Zmq_socket_type Libzmq.Bindings.ZMQ_REP
 
 pattern ZMQ_REQ :: Zmq_socket_type
-pattern ZMQ_REQ <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_REQ) -> True)
-  where
-    ZMQ_REQ = Zmq_socket_type Libzmq.Bindings._ZMQ_REQ
+pattern ZMQ_REQ = Zmq_socket_type Libzmq.Bindings.ZMQ_REQ
 
 pattern ZMQ_ROUTER :: Zmq_socket_type
-pattern ZMQ_ROUTER <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_ROUTER) -> True)
-  where
-    ZMQ_ROUTER = Zmq_socket_type Libzmq.Bindings._ZMQ_ROUTER
+pattern ZMQ_ROUTER = Zmq_socket_type Libzmq.Bindings.ZMQ_ROUTER
 
 pattern ZMQ_STREAM :: Zmq_socket_type
-pattern ZMQ_STREAM <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_STREAM) -> True)
-  where
-    ZMQ_STREAM = Zmq_socket_type Libzmq.Bindings._ZMQ_STREAM
+pattern ZMQ_STREAM = Zmq_socket_type Libzmq.Bindings.ZMQ_STREAM
 
 pattern ZMQ_SUB :: Zmq_socket_type
-pattern ZMQ_SUB <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_SUB) -> True)
-  where
-    ZMQ_SUB = Zmq_socket_type Libzmq.Bindings._ZMQ_SUB
+pattern ZMQ_SUB = Zmq_socket_type Libzmq.Bindings.ZMQ_SUB
 
 pattern ZMQ_XPUB :: Zmq_socket_type
-pattern ZMQ_XPUB <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_XPUB) -> True)
-  where
-    ZMQ_XPUB = Zmq_socket_type Libzmq.Bindings._ZMQ_XPUB
+pattern ZMQ_XPUB = Zmq_socket_type Libzmq.Bindings.ZMQ_XPUB
 
 pattern ZMQ_XSUB :: Zmq_socket_type
-pattern ZMQ_XSUB <-
-  ((== Zmq_socket_type Libzmq.Bindings._ZMQ_XSUB) -> True)
-  where
-    ZMQ_XSUB = Zmq_socket_type Libzmq.Bindings._ZMQ_XSUB
+pattern ZMQ_XSUB = Zmq_socket_type Libzmq.Bindings.ZMQ_XSUB
 
 {-# COMPLETE
   ZMQ_DEALER,

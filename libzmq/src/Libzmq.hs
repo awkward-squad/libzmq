@@ -206,6 +206,6 @@ module Libzmq
   )
 where
 
-import Libzmq.Bindings qualified
+import Libzmq.Bindings (Zmq_fd, Zmq_pollitem (..))
 import Libzmq.Internal.Functions
 import Libzmq.Internal.Types
