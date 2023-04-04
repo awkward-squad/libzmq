@@ -1,10 +1,12 @@
 module Main (main) where
 
 import Control.Exception (bracket)
+import Control.Monad (when)
 import Control.Monad qualified as Monad
 import Foreign (Ptr, Storable, free, malloc, nullFunPtr, nullPtr, peek, sizeOf)
 import Foreign.C (CInt, newCStringLen, peekCString, peekCStringLen)
 import GHC.IO.Encoding qualified as Encoding
+import GHC.Stack (HasCallStack)
 import Libzmq.Bindings
 import Test.Tasty
 import Test.Tasty.HUnit qualified as HUnit
@@ -17,9 +19,7 @@ main = do
 tests :: [TestTree]
 tests =
   [ testGroup "zmq_atomic_counter_dec" zmq_atomic_counter_dec_tests,
-    testGroup "zmq_atomic_counter_destroy" zmq_atomic_counter_destroy_tests,
     testGroup "zmq_atomic_counter_inc" zmq_atomic_counter_inc_tests,
-    testGroup "zmq_atomic_counter_new" zmq_atomic_counter_new_tests,
     testGroup "zmq_atomic_counter_set" zmq_atomic_counter_set_tests,
     testGroup "zmq_atomic_counter_value" zmq_atomic_counter_value_tests,
     testGroup "zmq_bind" zmq_bind_tests,
@@ -76,22 +76,46 @@ tests =
   ]
 
 zmq_atomic_counter_dec_tests :: [TestTree]
-zmq_atomic_counter_dec_tests = []
-
-zmq_atomic_counter_destroy_tests :: [TestTree]
-zmq_atomic_counter_destroy_tests = []
+zmq_atomic_counter_dec_tests =
+  [ test "decrements a new counter to -1 and returns 1" do
+      counter <- make_counter
+      io (zmq_atomic_counter_dec counter) `shouldReturn` 1
+      io (zmq_atomic_counter_value counter) `shouldReturn` (-1),
+    test "decrements a 1 counter to 0 and returns 0" do
+      counter <- make_counter
+      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
+      io (zmq_atomic_counter_dec counter) `shouldReturn` 0
+      io (zmq_atomic_counter_value counter) `shouldReturn` 0,
+    test "decrements a 2 counter to 1 and returns 1" do
+      counter <- make_counter
+      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
+      io (zmq_atomic_counter_inc counter) `shouldReturn` 1
+      io (zmq_atomic_counter_dec counter) `shouldReturn` 1
+      io (zmq_atomic_counter_value counter) `shouldReturn` 1
+  ]
 
 zmq_atomic_counter_inc_tests :: [TestTree]
-zmq_atomic_counter_inc_tests = []
-
-zmq_atomic_counter_new_tests :: [TestTree]
-zmq_atomic_counter_new_tests = []
+zmq_atomic_counter_inc_tests =
+  [ test "increments a new counter to 1 and returns 0" do
+      counter <- make_counter
+      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
+      io (zmq_atomic_counter_value counter) `shouldReturn` 1
+  ]
 
 zmq_atomic_counter_set_tests :: [TestTree]
-zmq_atomic_counter_set_tests = []
+zmq_atomic_counter_set_tests =
+  [ test "sets the value of a counter" do
+      counter <- make_counter
+      io (zmq_atomic_counter_set counter 10)
+      io (zmq_atomic_counter_value counter) `shouldReturn` 10
+  ]
 
 zmq_atomic_counter_value_tests :: [TestTree]
-zmq_atomic_counter_value_tests = []
+zmq_atomic_counter_value_tests =
+  [ test "gets the value of a counter" do
+      counter <- make_counter
+      io (zmq_atomic_counter_value counter) `shouldReturn` 0
+  ]
 
 zmq_bind_tests :: [TestTree]
 zmq_bind_tests = []
@@ -410,11 +434,11 @@ test :: String -> M () -> TestTree
 test name action =
   HUnit.testCase name (runM action)
 
-shouldBe :: (Eq a, Show a) => a -> a -> M ()
+shouldBe :: (HasCallStack, Eq a, Show a) => a -> a -> M ()
 shouldBe actual expected =
   io (actual HUnit.@?= expected)
 
-shouldReturn :: (Eq a, Show a) => M a -> a -> M ()
+shouldReturn :: (HasCallStack, Eq a, Show a) => M a -> a -> M ()
 shouldReturn action expected = do
   actual <- action
   actual `shouldBe` expected
@@ -435,7 +459,14 @@ make_context =
   M $
     bracket
       zmq_ctx_new
-      (\ctx -> zmq_ctx_term ctx >>= (HUnit.@?= 0))
+      \ctx -> zmq_ctx_term ctx >>= (HUnit.@?= 0)
+
+make_counter :: M (Ptr counter)
+make_counter =
+  M $
+    bracket
+      zmq_atomic_counter_new
+      \counter -> when (counter /= nullPtr) (zmq_atomic_counter_destroy counter)
 
 make_empty_message :: M (Ptr Zmq_msg)
 make_empty_message = do
