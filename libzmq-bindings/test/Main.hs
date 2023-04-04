@@ -16,11 +16,31 @@ main = do
 
 tests :: [TestTree]
 tests =
-  [ testGroup "zmq_ctx_get" zmq_ctx_get_tests,
+  [ testGroup "zmq_atomic_counter_dec" zmq_atomic_counter_dec_tests,
+    testGroup "zmq_atomic_counter_destroy" zmq_atomic_counter_destroy_tests,
+    testGroup "zmq_atomic_counter_inc" zmq_atomic_counter_inc_tests,
+    testGroup "zmq_atomic_counter_new" zmq_atomic_counter_new_tests,
+    testGroup "zmq_atomic_counter_set" zmq_atomic_counter_set_tests,
+    testGroup "zmq_atomic_counter_value" zmq_atomic_counter_value_tests,
+    testGroup "zmq_bind" zmq_bind_tests,
+    testGroup "zmq_close" zmq_close_tests,
+    testGroup "zmq_connect" zmq_connect_tests,
+    testGroup "zmq_ctx_destroy" zmq_ctx_destroy_tests,
+    testGroup "zmq_ctx_get" zmq_ctx_get_tests,
+    testGroup "zmq_ctx_new" zmq_ctx_new_tests,
     testGroup "zmq_ctx_set" zmq_ctx_set_tests,
     testGroup "zmq_ctx_shutdown" zmq_ctx_shutdown_tests,
     testGroup "zmq_ctx_term" zmq_ctx_term_tests,
+    testGroup "zmq_curve_keypair" zmq_curve_keypair_tests,
+    testGroup "zmq_curve_public" zmq_curve_public_tests,
+    testGroup "zmq_disconnect" zmq_disconnect_tests,
+    testGroup "zmq_errno" zmq_errno_tests,
+    testGroup "zmq_getsockopt" zmq_getsockopt_tests,
+    testGroup "zmq_has" zmq_has_tests,
+    testGroup "zmq_init" zmq_init_tests,
+    testGroup "zmq_msg_close" zmq_msg_close_tests,
     testGroup "zmq_msg_copy" zmq_msg_copy_tests,
+    testGroup "zmq_msg_data" zmq_msg_data_tests,
     testGroup "zmq_msg_get" zmq_msg_get_tests,
     testGroup "zmq_msg_gets" zmq_msg_gets_tests,
     testGroup "zmq_msg_init" zmq_msg_init_tests,
@@ -29,11 +49,61 @@ tests =
     testGroup "zmq_msg_more" zmq_msg_more_tests,
     testGroup "zmq_msg_move" zmq_msg_move_tests,
     testGroup "zmq_msg_recv" zmq_msg_recv_tests,
+    testGroup "zmq_msg_routing_id" zmq_msg_routing_id_tests,
     testGroup "zmq_msg_send" zmq_msg_send_tests,
     testGroup "zmq_msg_set" zmq_msg_set_tests,
+    testGroup "zmq_msg_set_routing_id" zmq_msg_set_routing_id_tests,
+    testGroup "zmq_msg_size" zmq_msg_size_tests,
+    testGroup "zmq_poll" zmq_poll_tests,
+    testGroup "zmq_poller" zmq_poller_tests,
+    testGroup "zmq_proxy" zmq_proxy_tests,
+    testGroup "zmq_proxy_steerable" zmq_proxy_steerable_tests,
+    testGroup "zmq_recv" zmq_recv_tests,
+    testGroup "zmq_recvmsg" zmq_recvmsg_tests,
+    testGroup "zmq_send" zmq_send_tests,
+    testGroup "zmq_send_const" zmq_send_const_tests,
+    testGroup "zmq_sendmsg" zmq_sendmsg_tests,
+    testGroup "zmq_setsockopt" zmq_setsockopt_tests,
+    testGroup "zmq_socket" zmq_socket_tests,
+    testGroup "zmq_socket_monitor" zmq_socket_monitor_tests,
     testGroup "zmq_strerror" zmq_strerror_tests,
-    testGroup "zmq_version" zmq_version_tests
+    testGroup "zmq_term" zmq_term_tests,
+    testGroup "zmq_timers" zmq_timers_tests,
+    testGroup "zmq_unbind" zmq_unbind_tests,
+    testGroup "zmq_version" zmq_version_tests,
+    testGroup "zmq_z85_decode" zmq_z85_decode_tests,
+    testGroup "zmq_z85_encode" zmq_z85_encode_tests
   ]
+
+zmq_atomic_counter_dec_tests :: [TestTree]
+zmq_atomic_counter_dec_tests = []
+
+zmq_atomic_counter_destroy_tests :: [TestTree]
+zmq_atomic_counter_destroy_tests = []
+
+zmq_atomic_counter_inc_tests :: [TestTree]
+zmq_atomic_counter_inc_tests = []
+
+zmq_atomic_counter_new_tests :: [TestTree]
+zmq_atomic_counter_new_tests = []
+
+zmq_atomic_counter_set_tests :: [TestTree]
+zmq_atomic_counter_set_tests = []
+
+zmq_atomic_counter_value_tests :: [TestTree]
+zmq_atomic_counter_value_tests = []
+
+zmq_bind_tests :: [TestTree]
+zmq_bind_tests = []
+
+zmq_close_tests :: [TestTree]
+zmq_close_tests = []
+
+zmq_connect_tests :: [TestTree]
+zmq_connect_tests = []
+
+zmq_ctx_destroy_tests :: [TestTree]
+zmq_ctx_destroy_tests = []
 
 zmq_ctx_get_tests :: [TestTree]
 zmq_ctx_get_tests =
@@ -66,6 +136,9 @@ zmq_ctx_get_tests =
       io (zmq_ctx_get ctx 12345) `shouldReturn` (-1)
       io zmq_errno `shouldReturn` EINVAL
   ]
+
+zmq_ctx_new_tests :: [TestTree]
+zmq_ctx_new_tests = []
 
 zmq_ctx_set_tests :: [TestTree]
 zmq_ctx_set_tests =
@@ -121,6 +194,30 @@ zmq_ctx_term_tests =
       io zmq_errno `shouldReturn` EFAULT
   ]
 
+zmq_curve_keypair_tests :: [TestTree]
+zmq_curve_keypair_tests = []
+
+zmq_curve_public_tests :: [TestTree]
+zmq_curve_public_tests = []
+
+zmq_disconnect_tests :: [TestTree]
+zmq_disconnect_tests = []
+
+zmq_errno_tests :: [TestTree]
+zmq_errno_tests = []
+
+zmq_getsockopt_tests :: [TestTree]
+zmq_getsockopt_tests = []
+
+zmq_has_tests :: [TestTree]
+zmq_has_tests = []
+
+zmq_init_tests :: [TestTree]
+zmq_init_tests = []
+
+zmq_msg_close_tests :: [TestTree]
+zmq_msg_close_tests = []
+
 zmq_msg_copy_tests :: [TestTree]
 zmq_msg_copy_tests =
   [ test "copies message contents" do
@@ -132,6 +229,9 @@ zmq_msg_copy_tests =
       io (zmq_msg_close src) `shouldReturn` 0
       io (zmq_msg_close dest) `shouldReturn` 0
   ]
+
+zmq_msg_data_tests :: [TestTree]
+zmq_msg_data_tests = []
 
 zmq_msg_get_tests :: [TestTree]
 zmq_msg_get_tests = []
@@ -163,11 +263,56 @@ zmq_msg_move_tests = []
 zmq_msg_recv_tests :: [TestTree]
 zmq_msg_recv_tests = []
 
+zmq_msg_routing_id_tests :: [TestTree]
+zmq_msg_routing_id_tests = []
+
 zmq_msg_send_tests :: [TestTree]
 zmq_msg_send_tests = []
 
 zmq_msg_set_tests :: [TestTree]
 zmq_msg_set_tests = []
+
+zmq_msg_set_routing_id_tests :: [TestTree]
+zmq_msg_set_routing_id_tests = []
+
+zmq_msg_size_tests :: [TestTree]
+zmq_msg_size_tests = []
+
+zmq_poll_tests :: [TestTree]
+zmq_poll_tests = []
+
+zmq_poller_tests :: [TestTree]
+zmq_poller_tests = []
+
+zmq_proxy_tests :: [TestTree]
+zmq_proxy_tests = []
+
+zmq_proxy_steerable_tests :: [TestTree]
+zmq_proxy_steerable_tests = []
+
+zmq_recv_tests :: [TestTree]
+zmq_recv_tests = []
+
+zmq_recvmsg_tests :: [TestTree]
+zmq_recvmsg_tests = []
+
+zmq_send_tests :: [TestTree]
+zmq_send_tests = []
+
+zmq_send_const_tests :: [TestTree]
+zmq_send_const_tests = []
+
+zmq_sendmsg_tests :: [TestTree]
+zmq_sendmsg_tests = []
+
+zmq_setsockopt_tests :: [TestTree]
+zmq_setsockopt_tests = []
+
+zmq_socket_tests :: [TestTree]
+zmq_socket_tests = []
+
+zmq_socket_monitor_tests :: [TestTree]
+zmq_socket_monitor_tests = []
 
 zmq_strerror_tests :: [TestTree]
 zmq_strerror_tests =
@@ -181,6 +326,15 @@ zmq_strerror_tests =
       z <- io (peek pz)
       (x, y, z) `shouldBe` (4, 3, 4)
   ]
+
+zmq_term_tests :: [TestTree]
+zmq_term_tests = []
+
+zmq_timers_tests :: [TestTree]
+zmq_timers_tests = []
+
+zmq_unbind_tests :: [TestTree]
+zmq_unbind_tests = []
 
 zmq_version_tests :: [TestTree]
 zmq_version_tests =
@@ -219,6 +373,12 @@ zmq_version_tests =
     test "complains about unknown error codes" do
       io (peekCString (zmq_strerror 0)) `shouldReturn` "Undefined error: 0"
   ]
+
+zmq_z85_decode_tests :: [TestTree]
+zmq_z85_decode_tests = []
+
+zmq_z85_encode_tests :: [TestTree]
+zmq_z85_encode_tests = []
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Test suite monad and test API
