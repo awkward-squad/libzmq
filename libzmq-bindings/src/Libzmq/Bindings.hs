@@ -67,6 +67,14 @@ module Libzmq.Bindings
     zmq_curve_keypair,
     zmq_curve_public,
 
+    -- ** Atomic counters
+    zmq_atomic_counter_new,
+    zmq_atomic_counter_set,
+    zmq_atomic_counter_inc,
+    zmq_atomic_counter_dec,
+    zmq_atomic_counter_value,
+    zmq_atomic_counter_destroy,
+
     -- * Types
     Zmq_fd,
     Zmq_msg,

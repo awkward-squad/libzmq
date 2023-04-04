@@ -323,3 +323,24 @@ foreign import capi unsafe "zmq.h zmq_z85_decode"
 -- http://api.zeromq.org/master:zmq-z85-encode
 foreign import capi unsafe "zmq.h zmq_z85_encode"
   zmq_z85_encode :: Ptr CChar -> Ptr Word8 -> CSize -> IO CString
+
+------------------------------------------------------------------------------------------------------------------------
+-- Atomic counters
+
+foreign import capi unsafe "zmq.h zmq_atomic_counter_new"
+  zmq_atomic_counter_new :: IO (Ptr counter)
+
+foreign import capi unsafe "zmq.h zmq_atomic_counter_set"
+  zmq_atomic_counter_set :: Ptr counter -> CInt -> IO ()
+
+foreign import capi unsafe "zmq.h zmq_atomic_counter_inc"
+  zmq_atomic_counter_inc :: Ptr counter -> IO CInt
+
+foreign import capi unsafe "zmq.h zmq_atomic_counter_dec"
+  zmq_atomic_counter_dec :: Ptr counter -> IO CInt
+
+foreign import capi unsafe "zmq.h zmq_atomic_counter_value"
+  zmq_atomic_counter_value :: Ptr counter -> IO CInt
+
+foreign import capi unsafe "zmq.h zmq_atomic_counter_destroy"
+  zmq_atomic_counter_destroy :: Ptr (Ptr counter) -> IO ()
