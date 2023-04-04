@@ -342,5 +342,5 @@ foreign import capi unsafe "zmq.h zmq_atomic_counter_dec"
 foreign import capi unsafe "zmq.h zmq_atomic_counter_value"
   zmq_atomic_counter_value :: Ptr counter -> IO CInt
 
-foreign import capi unsafe "zmq.h zmq_atomic_counter_destroy"
-  zmq_atomic_counter_destroy :: Ptr (Ptr counter) -> IO ()
+foreign import capi unsafe "zmq-wrapper.h zmq_atomic_counter_destroy_wrapper"
+  zmq_atomic_counter_destroy :: Ptr counter -> IO ()
