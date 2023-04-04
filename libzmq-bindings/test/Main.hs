@@ -4,7 +4,7 @@ import Control.Exception (bracket)
 import Control.Monad (when)
 import Control.Monad qualified as Monad
 import Foreign (Ptr, Storable, free, malloc, nullFunPtr, nullPtr, peek, sizeOf)
-import Foreign.C (CInt, newCStringLen, peekCString, peekCStringLen)
+import Foreign.C (CInt, newCString, newCStringLen, peekCString, peekCStringLen)
 import GHC.IO.Encoding qualified as Encoding
 import GHC.Stack (HasCallStack)
 import Libzmq.Bindings
@@ -118,7 +118,14 @@ zmq_atomic_counter_value_tests =
   ]
 
 zmq_bind_tests :: [TestTree]
-zmq_bind_tests = []
+zmq_bind_tests =
+  [ test "returns EINVAL on bogus endpoint" do
+      ctx <- make_context
+      socket <- make_socket ctx ZMQ_REP
+      endpoint <- io (newCString "bogus")
+      io (zmq_bind socket endpoint) `shouldReturn` (-1)
+      io zmq_errno `shouldReturn` EINVAL
+  ]
 
 zmq_close_tests :: [TestTree]
 zmq_close_tests = []
@@ -199,12 +206,12 @@ zmq_ctx_shutdown_tests =
       io (zmq_ctx_shutdown ctx) `shouldReturn` 0,
     test "does nothing on shut-down context" do
       ctx <- make_context
-      io (zmq_ctx_shutdown ctx) `shouldReturn` 0
+      io (zassert_ (zmq_ctx_shutdown ctx) (== 0))
       io (zmq_ctx_shutdown ctx) `shouldReturn` 0,
     test "returns EFAULT on terminated context" do
       ctx <- io zmq_ctx_new
-      io (zmq_ctx_shutdown ctx) `shouldReturn` 0
-      io (zmq_ctx_term ctx) `shouldReturn` 0
+      io (zassert_ (zmq_ctx_shutdown ctx) (== 0))
+      io (zassert_ (zmq_ctx_term ctx) (== 0))
       io (zmq_ctx_shutdown ctx) `shouldReturn` (-1)
       io zmq_errno `shouldReturn` EFAULT
   ]
@@ -213,7 +220,7 @@ zmq_ctx_term_tests :: [TestTree]
 zmq_ctx_term_tests =
   [ test "returns EFAULT on terminated context" do
       ctx <- io zmq_ctx_new
-      io (zmq_ctx_term ctx) `shouldReturn` 0
+      io (zassert_ (zmq_ctx_term ctx) (== 0))
       io (zmq_ctx_term ctx) `shouldReturn` (-1)
       io zmq_errno `shouldReturn` EFAULT
   ]
@@ -250,8 +257,8 @@ zmq_msg_copy_tests =
       dest <- make_empty_message
       io (zmq_msg_copy dest src) `shouldReturn` 0
       message_string dest `shouldReturn` "hello"
-      io (zmq_msg_close src) `shouldReturn` 0
-      io (zmq_msg_close dest) `shouldReturn` 0
+      io (zassert_ (zmq_msg_close src) (== 0))
+      io (zassert_ (zmq_msg_close dest) (== 0))
   ]
 
 zmq_msg_data_tests :: [TestTree]
@@ -272,7 +279,7 @@ zmq_msg_init_data_tests =
       _ <- make_context
       message <- make_string_message "hello"
       message_string message `shouldReturn` "hello"
-      io (zmq_msg_close message) `shouldReturn` 0
+      io (zassert_ (zmq_msg_close message) (== 0))
   ]
 
 zmq_msg_init_size_tests :: [TestTree]
@@ -446,37 +453,57 @@ shouldReturn action expected = do
 ------------------------------------------------------------------------------------------------------------------------
 -- Zmq library helpers
 
+zassert :: HasCallStack => IO a -> (a -> Bool) -> IO a
+zassert action predicate = do
+  result <- action
+  when (not (predicate result)) do
+    errno <- zmq_errno
+    message <- peekCString (zmq_strerror errno)
+    HUnit.assertFailure message
+  pure result
+
+zassert_ :: HasCallStack => IO a -> (a -> Bool) -> IO ()
+zassert_ action predicate = do
+  result <- action
+  when (not (predicate result)) do
+    errno <- zmq_errno
+    message <- peekCString (zmq_strerror errno)
+    HUnit.assertFailure message
+
 message_string :: Ptr Zmq_msg -> M String
 message_string message =
   io do
-    len <- zmq_msg_size message
-    HUnit.assertBool "zmq_msg_size failed" (len > 0)
+    len <- zassert (zmq_msg_size message) (> 0)
     string <- zmq_msg_data message
     peekCStringLen (string, fromIntegral len)
 
 make_context :: M (Ptr context)
 make_context =
-  M $
-    bracket
-      zmq_ctx_new
-      \ctx -> zmq_ctx_term ctx >>= (HUnit.@?= 0)
+  M (bracket zmq_ctx_new \ctx -> zassert (zmq_ctx_term ctx) (== 0))
 
 make_counter :: M (Ptr counter)
 make_counter =
-  M $
-    bracket
-      zmq_atomic_counter_new
-      \counter -> when (counter /= nullPtr) (zmq_atomic_counter_destroy counter)
+  M (bracket (zassert zmq_atomic_counter_new (/= nullPtr)) zmq_atomic_counter_destroy)
 
 make_empty_message :: M (Ptr Zmq_msg)
 make_empty_message = do
   message <- allocate
-  io (zmq_msg_init message) `shouldReturn` 0
+  io (zassert_ (zmq_msg_init message) (== 0))
   pure message
+
+make_socket :: HasCallStack => Ptr context -> CInt -> M (Ptr socket)
+make_socket ctx typ =
+  M (bracket acquire release)
+  where
+    acquire :: IO (Ptr socket)
+    acquire = zassert (zmq_socket ctx typ) (/= nullPtr)
+
+    release :: Ptr socket -> IO CInt
+    release socket = zassert (zmq_close socket) (== 0)
 
 make_string_message :: String -> M (Ptr Zmq_msg)
 make_string_message string = do
   (c_string, fromIntegral -> len) <- io (newCStringLen string)
   message <- allocate
-  io (zmq_msg_init_data message c_string len nullFunPtr nullPtr) `shouldReturn` 0
+  io (zassert_ (zmq_msg_init_data message c_string len nullFunPtr nullPtr) (== 0))
   pure message
