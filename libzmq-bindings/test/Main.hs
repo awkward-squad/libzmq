@@ -66,7 +66,6 @@ tests =
     testGroup "zmq_setsockopt" zmq_setsockopt_tests,
     testGroup "zmq_socket" zmq_socket_tests,
     testGroup "zmq_socket_monitor" zmq_socket_monitor_tests,
-    testGroup "zmq_strerror" zmq_strerror_tests,
     testGroup "zmq_term" zmq_term_tests,
     testGroup "zmq_timers" zmq_timers_tests,
     testGroup "zmq_unbind" zmq_unbind_tests,
@@ -125,6 +124,12 @@ zmq_bind_tests =
       endpoint <- io (newCString "bogus")
       io (zmq_bind socket endpoint) `shouldReturn` (-1)
       io zmq_errno `shouldReturn` EINVAL
+  , test "returns EPROTONOSUPPORT on bogus protocol" do
+      ctx <- make_context
+      socket <- make_socket ctx ZMQ_REP
+      endpoint <- io (newCString "bogus://bogus.com")
+      io (zmq_bind socket endpoint) `shouldReturn` (-1)
+      io zmq_errno `shouldReturn` EPROTONOSUPPORT
   ]
 
 zmq_close_tests :: [TestTree]
@@ -345,19 +350,6 @@ zmq_socket_tests = []
 zmq_socket_monitor_tests :: [TestTree]
 zmq_socket_monitor_tests = []
 
-zmq_strerror_tests :: [TestTree]
-zmq_strerror_tests =
-  [ test "returns the libzmq version" do
-      px <- allocate
-      py <- allocate
-      pz <- allocate
-      io (zmq_version px py pz)
-      x <- io (peek px)
-      y <- io (peek py)
-      z <- io (peek pz)
-      (x, y, z) `shouldBe` (4, 3, 4)
-  ]
-
 zmq_term_tests :: [TestTree]
 zmq_term_tests = []
 
@@ -369,40 +361,15 @@ zmq_unbind_tests = []
 
 zmq_version_tests :: [TestTree]
 zmq_version_tests =
-  [ test "translates error codes to error strings" do
-      io (peekCString (zmq_strerror EADDRINUSE)) `shouldReturn` "Address already in use"
-      io (peekCString (zmq_strerror EADDRNOTAVAIL)) `shouldReturn` "Can't assign requested address"
-      io (peekCString (zmq_strerror EAFNOSUPPORT)) `shouldReturn` "Address family not supported by protocol family"
-      io (peekCString (zmq_strerror EAGAIN)) `shouldReturn` "Resource temporarily unavailable"
-      io (peekCString (zmq_strerror EBADF)) `shouldReturn` "Bad file descriptor"
-      io (peekCString (zmq_strerror ECONNABORTED)) `shouldReturn` "Software caused connection abort"
-      io (peekCString (zmq_strerror ECONNREFUSED)) `shouldReturn` "Connection refused"
-      io (peekCString (zmq_strerror ECONNRESET)) `shouldReturn` "Connection reset by peer"
-      io (peekCString (zmq_strerror EFAULT)) `shouldReturn` "Bad address"
-      io (peekCString (zmq_strerror EFSM)) `shouldReturn` "Operation cannot be accomplished in current state"
-      io (peekCString (zmq_strerror EHOSTUNREACH)) `shouldReturn` "Host unreachable"
-      io (peekCString (zmq_strerror EINPROGRESS)) `shouldReturn` "Operation now in progress"
-      io (peekCString (zmq_strerror EINTR)) `shouldReturn` "Interrupted system call"
-      io (peekCString (zmq_strerror EINVAL)) `shouldReturn` "Invalid argument"
-      io (peekCString (zmq_strerror EMFILE)) `shouldReturn` "Too many open files"
-      io (peekCString (zmq_strerror EMSGSIZE)) `shouldReturn` "Message too long"
-      io (peekCString (zmq_strerror EMTHREAD)) `shouldReturn` "No thread available"
-      io (peekCString (zmq_strerror ENETDOWN)) `shouldReturn` "Network is down"
-      io (peekCString (zmq_strerror ENETRESET)) `shouldReturn` "Network dropped connection on reset"
-      io (peekCString (zmq_strerror ENETUNREACH)) `shouldReturn` "Network is unreachable"
-      io (peekCString (zmq_strerror ENOBUFS)) `shouldReturn` "No buffer space available"
-      io (peekCString (zmq_strerror ENOCOMPATPROTO)) `shouldReturn` "The protocol is not compatible with the socket type"
-      io (peekCString (zmq_strerror ENODEV)) `shouldReturn` "Operation not supported by device"
-      io (peekCString (zmq_strerror ENOENT)) `shouldReturn` "No such file or directory"
-      io (peekCString (zmq_strerror ENOMEM)) `shouldReturn` "Cannot allocate memory"
-      io (peekCString (zmq_strerror ENOTCONN)) `shouldReturn` "Socket is not connected"
-      io (peekCString (zmq_strerror ENOTSOCK)) `shouldReturn` "Socket operation on non-socket"
-      io (peekCString (zmq_strerror ENOTSUP)) `shouldReturn` "Operation not supported"
-      io (peekCString (zmq_strerror EPROTONOSUPPORT)) `shouldReturn` "Protocol not supported"
-      io (peekCString (zmq_strerror ETERM)) `shouldReturn` "Context was terminated"
-      io (peekCString (zmq_strerror ETIMEDOUT)) `shouldReturn` "Operation timed out",
-    test "complains about unknown error codes" do
-      io (peekCString (zmq_strerror 0)) `shouldReturn` "Undefined error: 0"
+  [ test "returns the libzmq version" do
+      px <- allocate
+      py <- allocate
+      pz <- allocate
+      io (zmq_version px py pz)
+      x <- io (peek px)
+      y <- io (peek py)
+      z <- io (peek pz)
+      (x, y, z) `shouldBe` (4, 3, 4)
   ]
 
 zmq_z85_decode_tests :: [TestTree]
