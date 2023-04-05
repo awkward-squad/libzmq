@@ -69,7 +69,16 @@ module Libzmq
     zmq_curve_keypair,
     zmq_curve_public,
 
+    -- ** Atomic counters
+    zmq_atomic_counter_new,
+    zmq_atomic_counter_set,
+    zmq_atomic_counter_inc,
+    zmq_atomic_counter_dec,
+    zmq_atomic_counter_value,
+    zmq_atomic_counter_destroy,
+
     -- * Types
+    Zmq_atomic_counter,
     Zmq_ctx_option
       ( ZMQ_BLOCKY,
         ZMQ_IO_THREADS,
@@ -191,6 +200,7 @@ module Libzmq
       ),
 
     -- ** Internals
+    Zmq_atomic_counter (Zmq_atomic_counter),
     Zmq_ctx_option (Zmq_ctx_option),
     Zmq_ctx (Zmq_ctx),
     Zmq_error (Zmq_error),

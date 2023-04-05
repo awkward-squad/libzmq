@@ -16,6 +16,11 @@ import Foreign.Ptr (Ptr, nullPtr)
 import Foreign.Storable (Storable)
 import Libzmq.Bindings qualified
 
+-- | An atomic counter.
+newtype Zmq_atomic_counter
+  = Zmq_atomic_counter (Ptr ())
+  deriving stock (Eq, Ord)
+
 -- | A ØMQ context option.
 newtype Zmq_ctx_option
   = Zmq_ctx_option CInt

@@ -327,20 +327,38 @@ foreign import capi unsafe "zmq.h zmq_z85_encode"
 ------------------------------------------------------------------------------------------------------------------------
 -- Atomic counters
 
+-- | Create a new atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-new
 foreign import capi unsafe "zmq.h zmq_atomic_counter_new"
   zmq_atomic_counter_new :: IO (Ptr counter)
 
+-- | Set the value of an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-set
 foreign import capi unsafe "zmq.h zmq_atomic_counter_set"
   zmq_atomic_counter_set :: Ptr counter -> CInt -> IO ()
 
+-- | Increment an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-inc
 foreign import capi unsafe "zmq.h zmq_atomic_counter_inc"
   zmq_atomic_counter_inc :: Ptr counter -> IO CInt
 
+-- | Decrement an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-dec
 foreign import capi unsafe "zmq.h zmq_atomic_counter_dec"
   zmq_atomic_counter_dec :: Ptr counter -> IO CInt
 
+-- | Get the value of an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-value
 foreign import capi unsafe "zmq.h zmq_atomic_counter_value"
   zmq_atomic_counter_value :: Ptr counter -> IO CInt
 
+-- | Destroy an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-destroy
 foreign import capi unsafe "zmq-wrapper.h zmq_atomic_counter_destroy_wrapper"
   zmq_atomic_counter_destroy :: Ptr counter -> IO ()

@@ -18,7 +18,8 @@ import Foreign (Ptr, Storable (peek, poke, sizeOf), alloca, allocaBytes, castPtr
 import Foreign.C (CChar (..), CInt (..), CLong (..), CSize (..), CUInt)
 import Libzmq.Bindings qualified
 import Libzmq.Internal.Types
-  ( Zmq_ctx (..),
+  ( Zmq_atomic_counter (..),
+    Zmq_ctx (..),
     Zmq_ctx_option (..),
     Zmq_error (..),
     Zmq_msg (..),
@@ -709,6 +710,52 @@ zmq_z85_encode bytes =
         if result == nullPtr
           then Left <$> zmq_errno
           else Right <$> Text.fromPtr0 (castPtr @CChar @Word8 buffer)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Atomic counters
+
+-- | Create a new atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-new
+zmq_atomic_counter_new :: IO (Maybe Zmq_atomic_counter)
+zmq_atomic_counter_new = do
+  counter <- Libzmq.Bindings.zmq_atomic_counter_new
+  pure if counter == nullPtr then Nothing else Just (Zmq_atomic_counter counter)
+
+-- | Set the value of an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-set
+zmq_atomic_counter_set :: Zmq_atomic_counter -> Int -> IO ()
+zmq_atomic_counter_set (Zmq_atomic_counter counter) n =
+  Libzmq.Bindings.zmq_atomic_counter_set counter (fromIntegral @Int @CInt n)
+
+-- | Increment an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-inc
+zmq_atomic_counter_inc :: Zmq_atomic_counter -> IO Int
+zmq_atomic_counter_inc (Zmq_atomic_counter counter) =
+  fromIntegral @CInt @Int <$> Libzmq.Bindings.zmq_atomic_counter_inc counter
+
+-- | Decrement an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-dec
+zmq_atomic_counter_dec :: Zmq_atomic_counter -> IO Int
+zmq_atomic_counter_dec (Zmq_atomic_counter counter) =
+  fromIntegral @CInt @Int <$> Libzmq.Bindings.zmq_atomic_counter_dec counter
+
+-- | Get the value of an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-value
+zmq_atomic_counter_value :: Zmq_atomic_counter -> IO Int
+zmq_atomic_counter_value (Zmq_atomic_counter counter) =
+  fromIntegral @CInt @Int <$> Libzmq.Bindings.zmq_atomic_counter_value counter
+
+-- | Destroy an atomic counter.
+--
+-- http://api.zeromq.org/master:zmq-atomic-counter-destroy
+zmq_atomic_counter_destroy :: Zmq_atomic_counter -> IO ()
+zmq_atomic_counter_destroy =
+  coerce Libzmq.Bindings.zmq_atomic_counter_destroy
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Misc. utils
