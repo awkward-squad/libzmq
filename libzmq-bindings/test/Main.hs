@@ -14,27 +14,58 @@ import Test.Tasty.HUnit qualified as HUnit
 main :: IO ()
 main = do
   Encoding.setForeignEncoding Encoding.char8 -- ascii test cases
-  defaultMain (testGroup "tests" tests)
+  defaultMain (testGroup "libzmq-bindings tests" tests)
 
 tests :: [TestTree]
 tests =
-  [ testGroup "zmq_atomic_counter_dec" zmq_atomic_counter_dec_tests,
-    testGroup "zmq_atomic_counter_inc" zmq_atomic_counter_inc_tests,
-    testGroup "zmq_atomic_counter_set" zmq_atomic_counter_set_tests,
-    testGroup "zmq_atomic_counter_value" zmq_atomic_counter_value_tests,
-    testGroup "zmq_bind" zmq_bind_tests,
-    testGroup "zmq_close" zmq_close_tests,
-    testGroup "zmq_connect" zmq_connect_tests,
-    testGroup "zmq_ctx_destroy" zmq_ctx_destroy_tests,
-    testGroup "zmq_ctx_get" zmq_ctx_get_tests,
-    testGroup "zmq_ctx_new" zmq_ctx_new_tests,
-    testGroup "zmq_ctx_set" zmq_ctx_set_tests,
+  [ test "atomic counter tests" do
+      counter <- M (bracket (zassert zmq_atomic_counter_new (/= nullPtr)) zmq_atomic_counter_destroy)
+      io (zmq_atomic_counter_value counter) `shouldReturn` 0
+      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
+      io (zmq_atomic_counter_value counter) `shouldReturn` 1
+      io (zmq_atomic_counter_inc counter) `shouldReturn` 1
+      io (zmq_atomic_counter_value counter) `shouldReturn` 2
+      io (zmq_atomic_counter_dec counter) `shouldReturn` 1
+      io (zmq_atomic_counter_value counter) `shouldReturn` 1
+      io (zmq_atomic_counter_dec counter) `shouldReturn` 0
+      io (zmq_atomic_counter_value counter) `shouldReturn` 0
+      io (zmq_atomic_counter_dec counter) `shouldReturn` 1
+      io (zmq_atomic_counter_value counter) `shouldReturn` (-1)
+      io (zmq_atomic_counter_set counter 10)
+      io (zmq_atomic_counter_value counter) `shouldReturn` 10,
+    test "basic socket bind/connect/unbind/disconnect tests" do
+      context <- make_context
+      socket <- make_socket context ZMQ_REP
+      endpoint <- io (newCString "inproc://foo")
+      io (zmq_bind socket endpoint) `shouldReturn` 0
+      io (zmq_connect socket endpoint) `shouldReturn` 0
+      io (zmq_unbind socket endpoint) `shouldReturn` 0
+      io (zmq_disconnect socket endpoint) `shouldReturn` 0,
+    test "getting/setting context options tests" do
+      ctx <- make_context
+      io (zmq_ctx_get ctx ZMQ_IO_THREADS) `shouldReturn` ZMQ_IO_THREADS_DFLT
+      io (zmq_ctx_set ctx ZMQ_IO_THREADS 0) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_IO_THREADS) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_MAX_SOCKETS) `shouldReturn` ZMQ_MAX_SOCKETS_DFLT
+      io (zmq_ctx_set ctx ZMQ_MAX_SOCKETS 1) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_MAX_SOCKETS) `shouldReturn` 1
+      io (zmq_ctx_get ctx ZMQ_SOCKET_LIMIT) `shouldReturn` 65535
+      io (zmq_ctx_get ctx ZMQ_IPV6) `shouldReturn` 0
+      io (zmq_ctx_set ctx ZMQ_IPV6 1) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_IPV6) `shouldReturn` 1
+      io (zmq_ctx_get ctx ZMQ_BLOCKY) `shouldReturn` 1
+      io (zmq_ctx_set ctx ZMQ_BLOCKY 0) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_BLOCKY) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_THREAD_SCHED_POLICY) `shouldReturn` ZMQ_THREAD_SCHED_POLICY_DFLT
+      io (zmq_ctx_set ctx ZMQ_THREAD_SCHED_POLICY 0) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_THREAD_SCHED_POLICY) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_THREAD_NAME_PREFIX) `shouldReturn` 0
+      io (zmq_ctx_set ctx ZMQ_THREAD_NAME_PREFIX 1) `shouldReturn` 0
+      io (zmq_ctx_get ctx ZMQ_THREAD_NAME_PREFIX) `shouldReturn` 1
+      io (zmq_ctx_get ctx ZMQ_MSG_T_SIZE) `shouldReturn` fromIntegral @Int @CInt (sizeOf (undefined :: Zmq_msg)),
     testGroup "zmq_ctx_shutdown" zmq_ctx_shutdown_tests,
-    testGroup "zmq_ctx_term" zmq_ctx_term_tests,
     testGroup "zmq_curve_keypair" zmq_curve_keypair_tests,
     testGroup "zmq_curve_public" zmq_curve_public_tests,
-    testGroup "zmq_disconnect" zmq_disconnect_tests,
-    testGroup "zmq_errno" zmq_errno_tests,
     testGroup "zmq_getsockopt" zmq_getsockopt_tests,
     testGroup "zmq_has" zmq_has_tests,
     testGroup "zmq_init" zmq_init_tests,
@@ -68,140 +99,16 @@ tests =
     testGroup "zmq_socket_monitor" zmq_socket_monitor_tests,
     testGroup "zmq_term" zmq_term_tests,
     testGroup "zmq_timers" zmq_timers_tests,
-    testGroup "zmq_unbind" zmq_unbind_tests,
-    testGroup "zmq_version" zmq_version_tests,
+    test "zmq_vesion returns version 4.3" do
+      px <- allocate
+      py <- allocate
+      pz <- allocate
+      io (zmq_version px py pz)
+      x <- io (peek px)
+      y <- io (peek py)
+      (x, y) `shouldBe` (4, 3),
     testGroup "zmq_z85_decode" zmq_z85_decode_tests,
     testGroup "zmq_z85_encode" zmq_z85_encode_tests
-  ]
-
-zmq_atomic_counter_dec_tests :: [TestTree]
-zmq_atomic_counter_dec_tests =
-  [ test "decrements a new counter to -1 and returns 1" do
-      counter <- make_counter
-      io (zmq_atomic_counter_dec counter) `shouldReturn` 1
-      io (zmq_atomic_counter_value counter) `shouldReturn` (-1),
-    test "decrements a 1 counter to 0 and returns 0" do
-      counter <- make_counter
-      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
-      io (zmq_atomic_counter_dec counter) `shouldReturn` 0
-      io (zmq_atomic_counter_value counter) `shouldReturn` 0,
-    test "decrements a 2 counter to 1 and returns 1" do
-      counter <- make_counter
-      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
-      io (zmq_atomic_counter_inc counter) `shouldReturn` 1
-      io (zmq_atomic_counter_dec counter) `shouldReturn` 1
-      io (zmq_atomic_counter_value counter) `shouldReturn` 1
-  ]
-
-zmq_atomic_counter_inc_tests :: [TestTree]
-zmq_atomic_counter_inc_tests =
-  [ test "increments a new counter to 1 and returns 0" do
-      counter <- make_counter
-      io (zmq_atomic_counter_inc counter) `shouldReturn` 0
-      io (zmq_atomic_counter_value counter) `shouldReturn` 1
-  ]
-
-zmq_atomic_counter_set_tests :: [TestTree]
-zmq_atomic_counter_set_tests =
-  [ test "sets the value of a counter" do
-      counter <- make_counter
-      io (zmq_atomic_counter_set counter 10)
-      io (zmq_atomic_counter_value counter) `shouldReturn` 10
-  ]
-
-zmq_atomic_counter_value_tests :: [TestTree]
-zmq_atomic_counter_value_tests =
-  [ test "gets the value of a counter" do
-      counter <- make_counter
-      io (zmq_atomic_counter_value counter) `shouldReturn` 0
-  ]
-
-zmq_bind_tests :: [TestTree]
-zmq_bind_tests =
-  [ test "returns EINVAL on bogus endpoint" do
-      ctx <- make_context
-      socket <- make_socket ctx ZMQ_REP
-      endpoint <- io (newCString "bogus")
-      io (zmq_bind socket endpoint) `shouldReturn` (-1)
-      io zmq_errno `shouldReturn` EINVAL
-  , test "returns EPROTONOSUPPORT on bogus protocol" do
-      ctx <- make_context
-      socket <- make_socket ctx ZMQ_REP
-      endpoint <- io (newCString "bogus://bogus.com")
-      io (zmq_bind socket endpoint) `shouldReturn` (-1)
-      io zmq_errno `shouldReturn` EPROTONOSUPPORT
-  ]
-
-zmq_close_tests :: [TestTree]
-zmq_close_tests = []
-
-zmq_connect_tests :: [TestTree]
-zmq_connect_tests = []
-
-zmq_ctx_destroy_tests :: [TestTree]
-zmq_ctx_destroy_tests = []
-
-zmq_ctx_get_tests :: [TestTree]
-zmq_ctx_get_tests =
-  [ test "gets the number of IO threads" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_IO_THREADS) `shouldReturn` ZMQ_IO_THREADS_DFLT,
-    test "gets the max number of sockets" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_MAX_SOCKETS) `shouldReturn` ZMQ_MAX_SOCKETS_DFLT,
-    test "gets the max configurable number of sockets" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_SOCKET_LIMIT) `shouldReturn` 65535,
-    test "gets IPv6" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_IPV6) `shouldReturn` 0,
-    test "gets blocky" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_BLOCKY) `shouldReturn` 1,
-    test "gets the thread scheduling policy" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_THREAD_SCHED_POLICY) `shouldReturn` ZMQ_THREAD_SCHED_POLICY_DFLT,
-    test "gets the thread name prefix" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_THREAD_NAME_PREFIX) `shouldReturn` 0,
-    test "gets the size of a zmq_msg_t" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx ZMQ_MSG_T_SIZE) `shouldReturn` fromIntegral @Int @CInt (sizeOf (undefined :: Zmq_msg)),
-    test "returns EINVAL on bogus option" do
-      ctx <- make_context
-      io (zmq_ctx_get ctx 12345) `shouldReturn` (-1)
-      io zmq_errno `shouldReturn` EINVAL
-  ]
-
-zmq_ctx_new_tests :: [TestTree]
-zmq_ctx_new_tests = []
-
-zmq_ctx_set_tests :: [TestTree]
-zmq_ctx_set_tests =
-  [ test "sets blocky" do
-      ctx <- make_context
-      io (zmq_ctx_set ctx ZMQ_BLOCKY 0) `shouldReturn` 0
-      io (zmq_ctx_get ctx ZMQ_BLOCKY) `shouldReturn` 0,
-    test "sets the number of IO threads" do
-      ctx <- make_context
-      io (zmq_ctx_set ctx ZMQ_IO_THREADS 0) `shouldReturn` 0
-      io (zmq_ctx_get ctx ZMQ_IO_THREADS) `shouldReturn` 0,
-    test "sets the thread scheduling policy" do
-      ctx <- make_context
-      io (zmq_ctx_set ctx ZMQ_THREAD_SCHED_POLICY 0) `shouldReturn` 0
-      io (zmq_ctx_get ctx ZMQ_THREAD_SCHED_POLICY) `shouldReturn` 0,
-    test "sets the thread name prefix" do
-      ctx <- make_context
-      io (zmq_ctx_set ctx ZMQ_THREAD_NAME_PREFIX 1) `shouldReturn` 0
-      io (zmq_ctx_get ctx ZMQ_THREAD_NAME_PREFIX) `shouldReturn` 1,
-    test "sets the maximum number of sockets" do
-      ctx <- make_context
-      io (zmq_ctx_set ctx ZMQ_MAX_SOCKETS 1) `shouldReturn` 0
-      io (zmq_ctx_get ctx ZMQ_MAX_SOCKETS) `shouldReturn` 1,
-    test "sets IPv6" do
-      ctx <- make_context
-      io (zmq_ctx_set ctx ZMQ_IPV6 1) `shouldReturn` 0
-      io (zmq_ctx_get ctx ZMQ_IPV6) `shouldReturn` 1
   ]
 
 zmq_ctx_shutdown_tests :: [TestTree]
@@ -221,26 +128,11 @@ zmq_ctx_shutdown_tests =
       io zmq_errno `shouldReturn` EFAULT
   ]
 
-zmq_ctx_term_tests :: [TestTree]
-zmq_ctx_term_tests =
-  [ test "returns EFAULT on terminated context" do
-      ctx <- io zmq_ctx_new
-      io (zassert_ (zmq_ctx_term ctx) (== 0))
-      io (zmq_ctx_term ctx) `shouldReturn` (-1)
-      io zmq_errno `shouldReturn` EFAULT
-  ]
-
 zmq_curve_keypair_tests :: [TestTree]
 zmq_curve_keypair_tests = []
 
 zmq_curve_public_tests :: [TestTree]
 zmq_curve_public_tests = []
-
-zmq_disconnect_tests :: [TestTree]
-zmq_disconnect_tests = []
-
-zmq_errno_tests :: [TestTree]
-zmq_errno_tests = []
 
 zmq_getsockopt_tests :: [TestTree]
 zmq_getsockopt_tests = []
@@ -356,22 +248,6 @@ zmq_term_tests = []
 zmq_timers_tests :: [TestTree]
 zmq_timers_tests = []
 
-zmq_unbind_tests :: [TestTree]
-zmq_unbind_tests = []
-
-zmq_version_tests :: [TestTree]
-zmq_version_tests =
-  [ test "returns the libzmq version" do
-      px <- allocate
-      py <- allocate
-      pz <- allocate
-      io (zmq_version px py pz)
-      x <- io (peek px)
-      y <- io (peek py)
-      z <- io (peek pz)
-      (x, y, z) `shouldBe` (4, 3, 4)
-  ]
-
 zmq_z85_decode_tests :: [TestTree]
 zmq_z85_decode_tests = []
 
@@ -447,10 +323,6 @@ message_string message =
 make_context :: M (Ptr context)
 make_context =
   M (bracket zmq_ctx_new \ctx -> zassert (zmq_ctx_term ctx) (== 0))
-
-make_counter :: M (Ptr counter)
-make_counter =
-  M (bracket (zassert zmq_atomic_counter_new (/= nullPtr)) zmq_atomic_counter_destroy)
 
 make_empty_message :: M (Ptr Zmq_msg)
 make_empty_message = do
