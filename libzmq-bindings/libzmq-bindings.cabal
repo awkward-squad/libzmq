@@ -26,7 +26,11 @@ source-repository head
   location: https://github.com/mitchellwrosen/libzmq.git
   subdir: libzmq-bindings
 
-common component
+library
+  build-depends:
+    base ^>= 4.16 || ^>= 4.17 || ^>= 4.18,
+  build-tool-depends: hsc2hs:hsc2hs ^>= 0.68
+  c-sources: cbits/zmq-wrapper.c
   default-extensions:
     BlockArguments
     CApiFFI
@@ -35,6 +39,8 @@ common component
     PatternSynonyms
     ViewPatterns
   default-language: GHC2021
+  exposed-modules:
+    Libzmq.Bindings
   ghc-options:
     -Weverything
     -Wno-all-missed-specialisations
@@ -50,15 +56,6 @@ common component
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
-
-library
-  import: component
-  build-depends:
-    base ^>= 4.16 || ^>= 4.17 || ^>= 4.18,
-  build-tool-depends: hsc2hs:hsc2hs ^>= 0.68
-  c-sources: cbits/zmq-wrapper.c
-  exposed-modules:
-    Libzmq.Bindings
   hs-source-dirs: src
   include-dirs: cbits
   includes: zmq-wrapper.h
@@ -71,15 +68,3 @@ library
   else
     pkgconfig-depends: libzmq >= 4.3 && < 4.4
   install-includes: zmq-wrapper.h
-
-test-suite tests
-  import: component
-  build-depends:
-    base,
-    libzmq-bindings,
-    tasty ^>= 1.4.3,
-    tasty-hunit ^>= 0.10.0,
-  ghc-options: -threaded -with-rtsopts=-N4
-  hs-source-dirs: test
-  main-is: Main.hs
-  type: exitcode-stdio-1.0
