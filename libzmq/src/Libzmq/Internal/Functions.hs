@@ -539,9 +539,9 @@ zmq_setsockopt_storable (Zmq_socket socket) option value =
       _ -> Left <$> zmq_errno
 
 zmq_setsockopt_text :: Zmq_socket -> CInt -> Text -> IO (Either Zmq_error ())
-zmq_setsockopt_text (Zmq_socket socket) option text =
-  Text.withCStringLen text \(cstring, len) ->
-    Libzmq.Bindings.zmq_setsockopt socket option cstring (fromIntegral @Int @CSize len) >>= \case
+zmq_setsockopt_text (Zmq_socket socket) option text@(Text _ _ len) =
+  Text.withCString text \cstring ->
+    Libzmq.Bindings.zmq_setsockopt socket option cstring (fromIntegral @Int @CSize (len + 1)) >>= \case
       0 -> pure (Right ())
       _ -> Left <$> zmq_errno
 
