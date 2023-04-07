@@ -14,7 +14,7 @@ tested-with: GHC == 9.2.7, GHC == 9.4.4, GHC == 9.6.1
 version: 0.1.0
 
 description:
-  Bindings to @libzmq-4.3.4@, without draft API support.
+  Bindings to @libzmq-4.3.4@.
 
 extra-source-files:
   CHANGELOG.md
@@ -25,11 +25,6 @@ source-repository head
   type: git
   location: https://github.com/mitchellwrosen/libzmq.git
   subdir: libzmq-bindings
-
-flag draft
-  description: Expose DRAFT API
-  Default: False
-  Manual: True
 
 library
   build-depends:
@@ -61,8 +56,6 @@ library
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
-  if flag(draft)
-    cpp-options: -DDRAFT
   hs-source-dirs: src
   include-dirs: cbits
   includes: zmq-wrapper.h
@@ -71,9 +64,6 @@ library
     Libzmq.Bindings.Internal.Constants
     Libzmq.Bindings.Internal.Functions
     Libzmq.Bindings.Internal.Types
-  if flag(draft)
-    other-modules:
-      Libzmq.Bindings.Internal.DraftConstants
   if os(windows)
     extra-libraries: zmq
   else

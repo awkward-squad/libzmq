@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Libzmq.Bindings
   ( -- * Functions
 
@@ -299,7 +297,6 @@ module Libzmq.Bindings
     -- ** Probe library capabilities
     pattern ZMQ_HAS_CAPABILITIES,
 
-#ifdef DRAFT
     -- * Draft constants
     pattern ZMQ_SERVER,
     pattern ZMQ_CLIENT,
@@ -310,7 +307,6 @@ module Libzmq.Bindings
     pattern ZMQ_DGRAM,
     pattern ZMQ_PEER,
     pattern ZMQ_CHANNEL,
-#endif
   )
 where
 
@@ -320,9 +316,6 @@ import Foreign.C.Error (Errno (Errno), eAGAIN, eBADF, eFAULT, eINTR, eINVAL, eMF
 import Libzmq.Bindings.Internal.Constants
 import Libzmq.Bindings.Internal.Functions
 import Libzmq.Bindings.Internal.Types
-#ifdef DRAFT
-import Libzmq.Bindings.Internal.DraftConstants
-#endif
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Errors
