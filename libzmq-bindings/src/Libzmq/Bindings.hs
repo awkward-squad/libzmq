@@ -328,6 +328,11 @@ module Libzmq.Bindings
     pattern ZMQ_WSS_TRUST_SYSTEM,
     pattern ZMQ_XPUB_MANUAL_LAST_VALUE,
     pattern ZMQ_ZAP_ENFORCE_DOMAIN,
+
+    -- ** @ZMQ_RECONNECT_STOP@ options
+    -- pattern ZMQ_RECONNECT_STOP_AFTER_DISCONNECT,
+    pattern ZMQ_RECONNECT_STOP_CONN_REFUSED,
+    pattern ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED,
   )
 where
 

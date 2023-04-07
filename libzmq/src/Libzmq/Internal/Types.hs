@@ -1,24 +1,36 @@
 module Libzmq.Internal.Types (module Libzmq.Internal.Types) where
 
 import Control.Monad (guard)
-import Data.Bits ((.&.), (.|.))
+import Data.Bits (Bits, (.&.), (.|.))
 import Data.ByteString (ByteString)
-import Data.Coerce
 import Data.Function ((&))
 import Data.Int (Int32, Int64)
 import Data.List qualified as List
-import Data.Maybe (catMaybes)
+import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import Data.Word (Word64)
-import Foreign.C.Error
 import Foreign.C.Types (CInt, CShort)
 import Foreign.Ptr (Ptr, nullPtr)
 import Libzmq.Bindings qualified
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_atomic_counter
 
 -- | An atomic counter.
 newtype Zmq_atomic_counter
   = Zmq_atomic_counter (Ptr ())
   deriving stock (Eq, Ord)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_ctx
+
+-- | A ØMQ context.
+newtype Zmq_ctx
+  = Zmq_ctx (Ptr ())
+  deriving stock (Eq, Ord)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_ctx_option
 
 -- | A ØMQ context option.
 newtype Zmq_ctx_option
@@ -76,10 +88,8 @@ pattern ZMQ_THREAD_SCHED_POLICY = Zmq_ctx_option Libzmq.Bindings.ZMQ_THREAD_SCHE
   ZMQ_THREAD_SCHED_POLICY
   #-}
 
--- | A ØMQ context.
-newtype Zmq_ctx
-  = Zmq_ctx (Ptr ())
-  deriving stock (Eq, Ord)
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_error
 
 -- | A ØMQ error.
 newtype Zmq_error
@@ -145,10 +155,7 @@ pattern ECONNRESET :: Zmq_error
 pattern ECONNRESET = Zmq_error Libzmq.Bindings.ECONNRESET
 
 pattern EFAULT :: Zmq_error
-pattern EFAULT <-
-  ((== Zmq_error (coerce @Errno @CInt eFAULT)) -> True)
-  where
-    EFAULT = Zmq_error (coerce @Errno @CInt eFAULT)
+pattern EFAULT = Zmq_error Libzmq.Bindings.EFAULT
 
 pattern EFSM :: Zmq_error
 pattern EFSM = Zmq_error Libzmq.Bindings.EFSM
@@ -160,22 +167,13 @@ pattern EINPROGRESS :: Zmq_error
 pattern EINPROGRESS = Zmq_error Libzmq.Bindings.EINPROGRESS
 
 pattern EINTR :: Zmq_error
-pattern EINTR <-
-  ((== Zmq_error (coerce @Errno @CInt eINTR)) -> True)
-  where
-    EINTR = Zmq_error (coerce @Errno @CInt eINTR)
+pattern EINTR = Zmq_error Libzmq.Bindings.EINTR
 
 pattern EINVAL :: Zmq_error
-pattern EINVAL <-
-  ((== Zmq_error (coerce @Errno @CInt eINVAL)) -> True)
-  where
-    EINVAL = Zmq_error (coerce @Errno @CInt eINVAL)
+pattern EINVAL = Zmq_error Libzmq.Bindings.EINVAL
 
 pattern EMFILE :: Zmq_error
-pattern EMFILE <-
-  ((== Zmq_error (coerce @Errno @CInt eMFILE)) -> True)
-  where
-    EMFILE = Zmq_error (coerce @Errno @CInt eMFILE)
+pattern EMFILE = Zmq_error Libzmq.Bindings.EMFILE
 
 pattern EMSGSIZE :: Zmq_error
 pattern EMSGSIZE = Zmq_error Libzmq.Bindings.EMSGSIZE
@@ -199,22 +197,13 @@ pattern ENOCOMPATPROTO :: Zmq_error
 pattern ENOCOMPATPROTO = Zmq_error Libzmq.Bindings.ENOCOMPATPROTO
 
 pattern ENODEV :: Zmq_error
-pattern ENODEV <-
-  ((== Zmq_error (coerce @Errno @CInt eNODEV)) -> True)
-  where
-    ENODEV = Zmq_error (coerce @Errno @CInt eNODEV)
+pattern ENODEV = Zmq_error Libzmq.Bindings.ENODEV
 
 pattern ENOENT :: Zmq_error
-pattern ENOENT <-
-  ((== Zmq_error (coerce @Errno @CInt eNOENT)) -> True)
-  where
-    ENOENT = Zmq_error (coerce @Errno @CInt eNOENT)
+pattern ENOENT = Zmq_error Libzmq.Bindings.ENOENT
 
 pattern ENOMEM :: Zmq_error
-pattern ENOMEM <-
-  ((== Zmq_error (coerce @Errno @CInt eNOMEM)) -> True)
-  where
-    ENOMEM = Zmq_error (coerce @Errno @CInt eNOMEM)
+pattern ENOMEM = Zmq_error Libzmq.Bindings.ENOMEM
 
 pattern ENOTCONN :: Zmq_error
 pattern ENOTCONN = Zmq_error Libzmq.Bindings.ENOTCONN
@@ -268,31 +257,23 @@ pattern ETIMEDOUT = Zmq_error Libzmq.Bindings.ETIMEDOUT
   ETIMEDOUT
   #-}
 
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_events
+
 -- | A set of ØMQ events.
 newtype Zmq_events
   = Zmq_events CShort
   deriving stock (Eq, Ord)
-
-instance Monoid Zmq_events where
-  mempty = Zmq_events 0
-  mappend = (<>)
-
-instance Semigroup Zmq_events where
-  Zmq_events x <> Zmq_events y =
-    Zmq_events (x .|. y)
+  deriving (Monoid, Semigroup) via (Bitfield CShort)
 
 instance Show Zmq_events where
-  show event =
-    [ "ZMQ_POLLIN" <$ guard (hasPollin event),
-      "ZMQ_POLLOUT" <$ guard (hasPollout event),
-      "ZMQ_POLLERR" <$ guard (hasPollerr event),
-      "ZMQ_POLLPRI" <$ guard (hasPollpri event)
-    ]
-      & catMaybes
-      & List.intersperse "<>"
-      & \case
-        [] -> "mempty"
-        events -> unwords events
+  show =
+    showMonoid
+      [ ("ZMQ_POLLIN", hasPollin),
+        ("ZMQ_POLLOUT", hasPollout),
+        ("ZMQ_POLLERR", hasPollerr),
+        ("ZMQ_POLLPRI", hasPollpri)
+      ]
 
 pattern ZMQ_POLLIN :: Zmq_events
 pattern ZMQ_POLLIN <-
@@ -334,6 +315,17 @@ hasPollpri :: Zmq_events -> Bool
 hasPollpri (Zmq_events n) =
   n .&. Libzmq.Bindings.ZMQ_POLLPRI /= 0
 
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_msg
+
+-- | A ØMQ message.
+newtype Zmq_msg
+  = Zmq_msg (Ptr Libzmq.Bindings.Zmq_msg)
+  deriving stock (Eq, Ord)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_msg_option
+
 -- | A ØMQ message option.
 newtype Zmq_msg_option
   = Zmq_msg_option CInt
@@ -355,12 +347,10 @@ pattern ZMQ_SHARED = Zmq_msg_option Libzmq.Bindings.ZMQ_SHARED
   ZMQ_SHARED
   #-}
 
--- | A ØMQ message.
-newtype Zmq_msg
-  = Zmq_msg (Ptr Libzmq.Bindings.Zmq_msg)
-  deriving stock (Eq, Ord)
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_pollitem_fd
 
--- | A file descripter ØMQ pollitem.
+-- | A file descriptor ØMQ pollitem.
 pattern Zmq_pollitem_fd :: Libzmq.Bindings.Zmq_fd -> Zmq_events -> Libzmq.Bindings.Zmq_pollitem
 pattern Zmq_pollitem_fd fd events <-
   (asPollitemFd -> Just (fd, events))
@@ -372,6 +362,15 @@ pattern Zmq_pollitem_fd fd events <-
           Libzmq.Bindings.events = events,
           Libzmq.Bindings.revents = 0
         }
+
+asPollitemFd :: Libzmq.Bindings.Zmq_pollitem -> Maybe (Libzmq.Bindings.Zmq_fd, Zmq_events)
+asPollitemFd Libzmq.Bindings.Zmq_pollitem {Libzmq.Bindings.socket, Libzmq.Bindings.fd, Libzmq.Bindings.revents} =
+  if socket == nullPtr
+    then Just (fd, Zmq_events revents)
+    else Nothing
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_pollitem_socket
 
 -- | A socket ØMQ pollitem.
 pattern Zmq_pollitem_socket :: Zmq_socket -> Zmq_events -> Libzmq.Bindings.Zmq_pollitem
@@ -386,17 +385,14 @@ pattern Zmq_pollitem_socket socket events <-
           Libzmq.Bindings.revents = 0
         }
 
-asPollitemFd :: Libzmq.Bindings.Zmq_pollitem -> Maybe (Libzmq.Bindings.Zmq_fd, Zmq_events)
-asPollitemFd Libzmq.Bindings.Zmq_pollitem {Libzmq.Bindings.socket, Libzmq.Bindings.fd, Libzmq.Bindings.revents} =
-  if socket == nullPtr
-    then Just (fd, Zmq_events revents)
-    else Nothing
-
 asPollitemSocket :: Libzmq.Bindings.Zmq_pollitem -> Maybe (Zmq_socket, Zmq_events)
 asPollitemSocket Libzmq.Bindings.Zmq_pollitem {Libzmq.Bindings.socket, Libzmq.Bindings.revents} =
   if socket == nullPtr
     then Nothing
     else Just (Zmq_socket socket, Zmq_events revents)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_protocol_error
 
 -- | A ØMQ protocol error.
 newtype Zmq_protocol_error
@@ -494,29 +490,71 @@ pattern ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED = Zmq_protocol_error Libzmq.Bindings
 -- COMPLETE pragma intentionally missing for forward-compatibility
 -- Users' programs should be allowed to use _ pattern to mean "the errors that were invented after I wrote this"
 
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_reconnect_stop_option
+
+-- | @ZMQ_RECONNECT_STOP@ option.
+newtype Zmq_reconnect_stop_option
+  = Zmq_reconnect_stop_option CInt
+  deriving stock (Eq, Ord)
+  deriving (Monoid, Semigroup) via (Bitfield CInt)
+
+instance Show Zmq_reconnect_stop_option where
+  show =
+    showMonoid
+      [ -- ("ZMQ_RECONNECT_STOP_AFTER_DISCONNECT", hasReconnectStopAfterDisconnect),
+        ("ZMQ_RECONNECT_STOP_CONN_REFUSED", hasReconnectStopConnRefused),
+        ("ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED", hasReconnectStopHandshakeFailed)
+      ]
+
+-- | /Draft API/.
+-- pattern ZMQ_RECONNECT_STOP_AFTER_DISCONNECT :: Zmq_reconnect_stop_option
+-- pattern ZMQ_RECONNECT_STOP_AFTER_DISCONNECT <-
+--   (hasReconnectStopAfterDisconnect -> True)
+--   where
+--     ZMQ_RECONNECT_STOP_AFTER_DISCONNECT = Zmq_reconnect_stop_option Libzmq.Bindings.ZMQ_RECONNECT_STOP_AFTER_DISCONNECT
+
+-- | /Draft API/.
+pattern ZMQ_RECONNECT_STOP_CONN_REFUSED :: Zmq_reconnect_stop_option
+pattern ZMQ_RECONNECT_STOP_CONN_REFUSED <-
+  (hasReconnectStopConnRefused -> True)
+  where
+    ZMQ_RECONNECT_STOP_CONN_REFUSED = Zmq_reconnect_stop_option Libzmq.Bindings.ZMQ_RECONNECT_STOP_CONN_REFUSED
+
+-- | /Draft API/.
+pattern ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED :: Zmq_reconnect_stop_option
+pattern ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED <-
+  (hasReconnectStopHandshakeFailed -> True)
+  where
+    ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED = Zmq_reconnect_stop_option Libzmq.Bindings.ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED
+
+-- hasReconnectStopAfterDisconnect :: Zmq_reconnect_stop_option -> Bool
+-- hasReconnectStopAfterDisconnect (Zmq_reconnect_stop_option n) =
+--   n .&. Libzmq.Bindings.ZMQ_RECONNECT_STOP_AFTER_DISCONNECT /= 0
+
+hasReconnectStopConnRefused :: Zmq_reconnect_stop_option -> Bool
+hasReconnectStopConnRefused (Zmq_reconnect_stop_option n) =
+  n .&. Libzmq.Bindings.ZMQ_RECONNECT_STOP_CONN_REFUSED /= 0
+
+hasReconnectStopHandshakeFailed :: Zmq_reconnect_stop_option -> Bool
+hasReconnectStopHandshakeFailed (Zmq_reconnect_stop_option n) =
+  n .&. Libzmq.Bindings.ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED /= 0
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_send_option
+
 -- | A ØMQ send option.
 newtype Zmq_send_option
   = Zmq_send_option CInt
   deriving stock (Eq, Ord)
-
-instance Monoid Zmq_send_option where
-  mempty = Zmq_send_option 0
-  mappend = (<>)
-
-instance Semigroup Zmq_send_option where
-  Zmq_send_option x <> Zmq_send_option y =
-    Zmq_send_option (x .|. y)
+  deriving (Monoid, Semigroup) via (Bitfield CInt)
 
 instance Show Zmq_send_option where
-  show option =
-    [ "ZMQ_DONTWAIT" <$ guard (hasDontwait option),
-      "ZMQ_SNDMORE" <$ guard (hasSndmore option)
-    ]
-      & catMaybes
-      & List.intersperse "<>"
-      & \case
-        [] -> "mempty"
-        options -> unwords options
+  show =
+    showMonoid
+      [ ("ZMQ_DONTWAIT", hasDontwait),
+        ("ZMQ_SNDMORE", hasSndmore)
+      ]
 
 pattern ZMQ_DONTWAIT :: Zmq_send_option
 pattern ZMQ_DONTWAIT <-
@@ -538,10 +576,16 @@ hasSndmore :: Zmq_send_option -> Bool
 hasSndmore (Zmq_send_option n) =
   n .&. Libzmq.Bindings.ZMQ_SNDMORE /= 0
 
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_socket
+
 -- | A ØMQ socket.
 newtype Zmq_socket
   = Zmq_socket (Ptr ())
   deriving stock (Eq, Ord)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_socket_event_type
 
 -- | A ØMQ socket event type.
 --
@@ -552,39 +596,28 @@ newtype Zmq_socket
 newtype Zmq_socket_events
   = Zmq_socket_events CInt
   deriving stock (Eq, Ord)
-
-instance Monoid Zmq_socket_events where
-  mempty = Zmq_socket_events 0
-  mappend = (<>)
-
-instance Semigroup Zmq_socket_events where
-  Zmq_socket_events x <> Zmq_socket_events y =
-    Zmq_socket_events (x .|. y)
+  deriving (Monoid, Semigroup) via (Bitfield CInt)
 
 instance Show Zmq_socket_events where
-  show event =
-    [ "ZMQ_EVENT_ACCEPTED" <$ guard (hasAccepted event),
-      "ZMQ_EVENT_ACCEPT_FAILED" <$ guard (hasAcceptFailed event),
-      "ZMQ_EVENT_ALL" <$ guard (hasAll event),
-      "ZMQ_EVENT_BIND_FAILED" <$ guard (hasBindFailed event),
-      "ZMQ_EVENT_CLOSED" <$ guard (hasClosed event),
-      "ZMQ_EVENT_CLOSE_FAILED" <$ guard (hasCloseFailed event),
-      "ZMQ_EVENT_CONNECTED" <$ guard (hasConnected event),
-      "ZMQ_EVENT_CONNECT_DELAYED" <$ guard (hasConnectDelayed event),
-      "ZMQ_EVENT_CONNECT_RETRIED" <$ guard (hasConnectRetried event),
-      "ZMQ_EVENT_DISCONNECTED" <$ guard (hasDisconnected event),
-      "ZMQ_EVENT_HANDSHAKE_FAILED_AUTH" <$ guard (hasHandshakeFailedAuth event),
-      "ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL" <$ guard (hasHandshakeFailedNoDetail event),
-      "ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL" <$ guard (hasHandshakeFailedProtocol event),
-      "ZMQ_EVENT_HANDSHAKE_SUCCEEDED" <$ guard (hasHandshakeSucceeded event),
-      "ZMQ_EVENT_LISTENING" <$ guard (hasListening event),
-      "ZMQ_EVENT_MONITOR_STOPPED" <$ guard (hasMonitorStopped event)
-    ]
-      & catMaybes
-      & List.intersperse "<>"
-      & \case
-        [] -> "mempty"
-        events -> unwords events
+  show =
+    showMonoid
+      [ ("ZMQ_EVENT_ACCEPTED", hasAccepted),
+        ("ZMQ_EVENT_ACCEPT_FAILED", hasAcceptFailed),
+        ("ZMQ_EVENT_ALL", hasAll),
+        ("ZMQ_EVENT_BIND_FAILED", hasBindFailed),
+        ("ZMQ_EVENT_CLOSED", hasClosed),
+        ("ZMQ_EVENT_CLOSE_FAILED", hasCloseFailed),
+        ("ZMQ_EVENT_CONNECTED", hasConnected),
+        ("ZMQ_EVENT_CONNECT_DELAYED", hasConnectDelayed),
+        ("ZMQ_EVENT_CONNECT_RETRIED", hasConnectRetried),
+        ("ZMQ_EVENT_DISCONNECTED", hasDisconnected),
+        ("ZMQ_EVENT_HANDSHAKE_FAILED_AUTH", hasHandshakeFailedAuth),
+        ("ZMQ_EVENT_HANDSHAKE_FAILED_NO_DETAIL", hasHandshakeFailedNoDetail),
+        ("ZMQ_EVENT_HANDSHAKE_FAILED_PROTOCOL", hasHandshakeFailedProtocol),
+        ("ZMQ_EVENT_HANDSHAKE_SUCCEEDED", hasHandshakeSucceeded),
+        ("ZMQ_EVENT_LISTENING", hasListening),
+        ("ZMQ_EVENT_MONITOR_STOPPED", hasMonitorStopped)
+      ]
 
 pattern ZMQ_EVENT_ACCEPTED :: Zmq_socket_events
 pattern ZMQ_EVENT_ACCEPTED = Zmq_socket_events Libzmq.Bindings.ZMQ_EVENT_ACCEPTED
@@ -701,6 +734,9 @@ hasMonitorStopped :: Zmq_socket_events -> Bool
 hasMonitorStopped (Zmq_socket_events n) =
   n .&. Libzmq.Bindings.ZMQ_EVENT_MONITOR_STOPPED /= 0
 
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_socket_option
+
 -- | A ØMQ socket option.
 data Zmq_socket_option a where
   ZMQ_AFFINITY :: Zmq_socket_option Word64
@@ -713,6 +749,8 @@ data Zmq_socket_option a where
   ZMQ_CURVE_SECRETKEY :: Zmq_socket_option ByteString
   ZMQ_CURVE_SERVER :: Zmq_socket_option Int32
   ZMQ_CURVE_SERVERKEY :: Zmq_socket_option ByteString
+  -- | /Draft API/.
+  ZMQ_DISCONNECT_MSG :: Zmq_socket_option ByteString
   ZMQ_GSSAPI_PLAINTEXT :: Zmq_socket_option Int32
   ZMQ_GSSAPI_PRINCIPAL :: Zmq_socket_option Text
   ZMQ_GSSAPI_PRINCIPAL_NAMETYPE :: Zmq_socket_option Int32
@@ -723,16 +761,32 @@ data Zmq_socket_option a where
   ZMQ_HEARTBEAT_IVL :: Zmq_socket_option Int32
   ZMQ_HEARTBEAT_TIMEOUT :: Zmq_socket_option Int32
   ZMQ_HEARTBEAT_TTL :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_HELLO_MSG :: Zmq_socket_option ByteString
   ZMQ_IMMEDIATE :: Zmq_socket_option Int32
   ZMQ_INVERT_MATCHING :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_IN_BATCH_SIZE :: Zmq_socket_option Int32
   ZMQ_IPV6' :: Zmq_socket_option Int32
   ZMQ_LINGER :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_LOOPBACK_FASTPATH :: Zmq_socket_option Int32
   ZMQ_MAXMSGSIZE :: Zmq_socket_option Int64
+  -- | /Draft API/.
+  ZMQ_METADATA :: Zmq_socket_option Text
   ZMQ_MULTICAST_HOPS :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_MULTICAST_LOOP :: Zmq_socket_option Int32
   ZMQ_MULTICAST_MAXTPDU :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_ONLY_FIRST_SUBSCRIBE :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_OUT_BATCH_SIZE :: Zmq_socket_option Int32
   ZMQ_PLAIN_PASSWORD :: Zmq_socket_option Text
   ZMQ_PLAIN_SERVER :: Zmq_socket_option Int32
   ZMQ_PLAIN_USERNAME :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_PRIORITY :: Zmq_socket_option Int32
   ZMQ_PROBE_ROUTER :: Zmq_socket_option Int32
   ZMQ_RATE :: Zmq_socket_option Int32
   ZMQ_RCVBUF :: Zmq_socket_option Int32
@@ -740,16 +794,24 @@ data Zmq_socket_option a where
   ZMQ_RCVTIMEO :: Zmq_socket_option Int32
   ZMQ_RECONNECT_IVL :: Zmq_socket_option Int32
   ZMQ_RECONNECT_IVL_MAX :: Zmq_socket_option Int32
+  -- -- | /Draft API/.
+  ZMQ_RECONNECT_STOP :: Zmq_socket_option Zmq_reconnect_stop_option
   ZMQ_RECOVERY_IVL :: Zmq_socket_option Int32
   ZMQ_REQ_CORRELATE :: Zmq_socket_option Int32
   ZMQ_REQ_RELAXED :: Zmq_socket_option Int32
   ZMQ_ROUTER_HANDOVER :: Zmq_socket_option Int32
   ZMQ_ROUTER_MANDATORY :: Zmq_socket_option Int32
+  -- -- | /Draft API/.
+  -- ZMQ_ROUTER_NOTIFY :: Zmq_socket_option ()
   ZMQ_ROUTING_ID :: Zmq_socket_option ByteString
   ZMQ_SNDBUF :: Zmq_socket_option Int32
   ZMQ_SNDHWM :: Zmq_socket_option Int32
   ZMQ_SNDTIMEO :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_SOCKS_PASSWORD :: Zmq_socket_option Text
   ZMQ_SOCKS_PROXY :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_SOCKS_USERNAME :: Zmq_socket_option Text
   ZMQ_STREAM_NOTIFY :: Zmq_socket_option Int32
   ZMQ_SUBSCRIBE :: Zmq_socket_option ByteString
   ZMQ_TCP_KEEPALIVE :: Zmq_socket_option Int32
@@ -764,16 +826,33 @@ data Zmq_socket_option a where
   ZMQ_VMCI_BUFFER_MIN_SIZE :: Zmq_socket_option Word64
   ZMQ_VMCI_BUFFER_SIZE :: Zmq_socket_option Word64
   ZMQ_VMCI_CONNECT_TIMEOUT :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_WSS_CERT_PEM :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_WSS_HOSTNAME :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_WSS_KEY_PEM :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_WSS_TRUST_PEM :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_WSS_TRUST_SYSTEM :: Zmq_socket_option Int32
   ZMQ_XPUB_MANUAL :: Zmq_socket_option Int32
+  -- | /Draft API/.
+  ZMQ_XPUB_MANUAL_LAST_VALUE :: Zmq_socket_option Int32
   ZMQ_XPUB_NODROP :: Zmq_socket_option Int32
   ZMQ_XPUB_VERBOSE :: Zmq_socket_option Int32
   ZMQ_XPUB_VERBOSER :: Zmq_socket_option Int32
   ZMQ_XPUB_WELCOME_MSG :: Zmq_socket_option ByteString
   ZMQ_ZAP_DOMAIN :: Zmq_socket_option Text
+  -- | /Draft API/.
+  ZMQ_ZAP_ENFORCE_DOMAIN :: Zmq_socket_option Int32
 
 deriving stock instance Eq (Zmq_socket_option a)
 
 deriving stock instance Show (Zmq_socket_option a)
+
+------------------------------------------------------------------------------------------------------------------------
+-- Zmq_socket_type
 
 -- | A ØMQ socket type.
 newtype Zmq_socket_type
@@ -899,3 +978,25 @@ pattern ZMQ_XSUB = Zmq_socket_type Libzmq.Bindings.ZMQ_XSUB
   ZMQ_XPUB,
   ZMQ_XSUB
   #-}
+
+------------------------------------------------------------------------------------------------------------------------
+-- Utils
+
+newtype Bitfield a
+  = Bitfield a
+
+instance (Bits a, Num a) => Monoid (Bitfield a) where
+  mempty = Bitfield 0
+  mappend = (<>)
+
+instance Bits a => Semigroup (Bitfield a) where
+  Bitfield x <> Bitfield y = Bitfield (x .|. y)
+
+showMonoid :: [(String, a -> Bool)] -> a -> String
+showMonoid xs y =
+  xs
+    & mapMaybe (\(x, p) -> x <$ guard (p y))
+    & List.intersperse "<>"
+    & \case
+      [] -> "mempty"
+      events -> unwords events

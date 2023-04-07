@@ -610,3 +610,16 @@ pattern ZMQ_XPUB_MANUAL_LAST_VALUE = 98
 
 pattern ZMQ_ZAP_ENFORCE_DOMAIN :: CInt
 pattern ZMQ_ZAP_ENFORCE_DOMAIN = 93
+
+------------------------------------------------------------------------------------------------------------------------
+-- DRAFT ZMQ_RECONNECT_STOP options
+
+-- This is still 0x3 (bug) in 4.3.4, so we don't expose it API for now
+pattern ZMQ_RECONNECT_STOP_AFTER_DISCONNECT :: CInt
+pattern ZMQ_RECONNECT_STOP_AFTER_DISCONNECT = 0x4
+
+pattern ZMQ_RECONNECT_STOP_CONN_REFUSED :: CInt
+pattern ZMQ_RECONNECT_STOP_CONN_REFUSED = 0x1
+
+pattern ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED :: CInt
+pattern ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED = 0x2

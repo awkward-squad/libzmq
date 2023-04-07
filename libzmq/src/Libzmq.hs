@@ -167,9 +167,8 @@ module Libzmq
         ZMQ_PROTOCOL_ERROR_ZMTP_UNEXPECTED_COMMAND,
         ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED
       ),
-    Zmq_send_option,
-    pattern ZMQ_DONTWAIT,
-    pattern ZMQ_SNDMORE,
+    Zmq_send_option (ZMQ_DONTWAIT, ZMQ_SNDMORE),
+    Zmq_reconnect_stop_option (ZMQ_RECONNECT_STOP_CONN_REFUSED, ZMQ_RECONNECT_STOP_HANDSHAKE_FAILED),
     Zmq_socket,
     Zmq_socket_events
       ( ZMQ_EVENT_ACCEPTED,
@@ -224,6 +223,7 @@ module Libzmq
     Zmq_msg (Zmq_msg),
     Libzmq.Bindings.Zmq_pollitem (..),
     Zmq_protocol_error (Zmq_protocol_error),
+    Zmq_reconnect_stop_option (Zmq_reconnect_stop_option),
     Zmq_send_option (Zmq_send_option),
     Zmq_socket (Zmq_socket),
     Zmq_socket_events (Zmq_socket_events),

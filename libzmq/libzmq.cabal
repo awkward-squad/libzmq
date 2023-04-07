@@ -15,6 +15,7 @@ common component
     BlockArguments
     CApiFFI
     DerivingStrategies
+    DerivingVia
     GADTs
     LambdaCase
     OverloadedStrings
