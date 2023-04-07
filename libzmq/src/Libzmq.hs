@@ -18,6 +18,7 @@ module Libzmq
 
     -- ** Message
     zmq_msg_init,
+    zmq_msg_init_data,
     zmq_msg_init_size,
     zmq_msg_free,
     zmq_msg_send,
@@ -79,6 +80,7 @@ module Libzmq
 
     -- * Types
     Zmq_atomic_counter,
+    Zmq_ctx,
     Zmq_ctx_option
       ( ZMQ_BLOCKY,
         ZMQ_IO_THREADS,
@@ -90,7 +92,11 @@ module Libzmq
         ZMQ_THREAD_NAME_PREFIX,
         ZMQ_THREAD_SCHED_POLICY
       ),
-    Zmq_ctx,
+    -- TODO CInt->Int these
+    pattern ZMQ_IO_THREADS_DFLT,
+    pattern ZMQ_MAX_SOCKETS_DFLT,
+    pattern ZMQ_THREAD_PRIORITY_DFLT,
+    pattern ZMQ_THREAD_SCHED_POLICY_DFLT,
     Zmq_error
       ( EADDRINUSE,
         EADDRNOTAVAIL,
@@ -216,6 +222,13 @@ module Libzmq
   )
 where
 
-import Libzmq.Bindings (Zmq_fd, Zmq_pollitem (..))
+import Libzmq.Bindings
+  ( Zmq_fd,
+    Zmq_pollitem (..),
+    pattern ZMQ_IO_THREADS_DFLT,
+    pattern ZMQ_MAX_SOCKETS_DFLT,
+    pattern ZMQ_THREAD_PRIORITY_DFLT,
+    pattern ZMQ_THREAD_SCHED_POLICY_DFLT,
+  )
 import Libzmq.Internal.Functions
 import Libzmq.Internal.Types

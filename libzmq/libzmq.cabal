@@ -4,16 +4,16 @@ name: libzmq
 version: 0
 description: libzmq 4.3.4 bindings
 
-library
-  build-depends:
-    array ^>= 0.5.3,
-    base ^>= 4.16 || ^>= 4.17 || ^>= 4.18,
-    bytestring ^>= 0.11.0,
-    libzmq-bindings,
-    text ^>= 2.0,
+extra-source-files:
+  CHANGELOG.md
+  cbits/utils.c
+  cbits/utils.h
+
+common component
   default-extensions:
     AllowAmbiguousTypes
     BlockArguments
+    CApiFFI
     DerivingStrategies
     GADTs
     LambdaCase
@@ -22,8 +22,6 @@ library
     ScopedTypeVariables
     ViewPatterns
   default-language: GHC2021
-  exposed-modules:
-    Libzmq
   ghc-options:
     -Weverything
     -Wno-all-missed-specialisations
@@ -39,7 +37,35 @@ library
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
+
+library
+  import: component
+  build-depends:
+    array ^>= 0.5.3,
+    base ^>= 4.16 || ^>= 4.17 || ^>= 4.18,
+    bytestring ^>= 0.11.0,
+    libzmq-bindings,
+    text ^>= 2.0,
+  c-sources: cbits/utils.c
+  exposed-modules:
+    Libzmq
   hs-source-dirs: src
+  include-dirs: cbits
+  includes: utils.h
   other-modules:
     Libzmq.Internal.Functions
     Libzmq.Internal.Types
+
+test-suite tests
+  import: component
+  build-depends:
+    base,
+    libzmq,
+    libzmq-bindings,
+    tasty ^>= 1.4.3,
+    tasty-hunit ^>= 0.10.0,
+    text ^>= 2.0,
+  ghc-options: -threaded -with-rtsopts=-N4
+  hs-source-dirs: test
+  main-is: Main.hs
+  type: exitcode-stdio-1.0

@@ -6,6 +6,7 @@ import Data.Array.Storable qualified as StorableArray
 import Data.Bits ((.|.))
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as ByteString
+import Data.ByteString.Internal qualified as ByteString.Internal
 import Data.ByteString.Unsafe qualified as ByteString.Unsafe
 import Data.Coerce (coerce)
 import Data.Int (Int64)
@@ -15,7 +16,7 @@ import Data.Text.Foreign qualified as Text
 import Data.Text.Internal (Text (Text))
 import Data.Void (Void)
 import Data.Word (Word8)
-import Foreign (Ptr, Storable (peek, poke, sizeOf), alloca, allocaBytes, castPtr, free, malloc, nullPtr)
+import Foreign (FunPtr, Ptr, Storable (peek, poke, sizeOf), alloca, allocaBytes, castPtr, free, malloc, mallocBytes, nullPtr, withForeignPtr)
 import Foreign.C (CChar (..), CInt (..), CLong (..), CSize (..), CUInt)
 import Libzmq.Bindings qualified
 import Libzmq.Internal.Types
@@ -77,11 +78,16 @@ zmq_version =
 -- | Get a ØMQ context option.
 --
 -- http://api.zeromq.org/master:zmq-ctx-get
-zmq_ctx_get :: Zmq_ctx -> Zmq_ctx_option -> IO (Either Zmq_error Int)
+zmq_ctx_get :: Zmq_ctx -> Zmq_ctx_option -> IO Int
 zmq_ctx_get (Zmq_ctx context) (Zmq_ctx_option option) =
-  Libzmq.Bindings.zmq_ctx_get context option >>= \case
-    -1 -> Left <$> zmq_errno
-    n -> pure (Right (fromIntegral @CInt @Int n))
+  -- We don't check errno here, because the only way this function can fail is if the user provides an invalid option.
+  -- This should be impossible, as we have a Zmq_ctx_option type that only contains valid options. If the user unsafely
+  -- uses its exposed constructor to call this function with an invalid option, ok... they'll get back a -1 and maybe
+  -- have to call zmq_errno themselves.
+  --
+  -- This function's contract isn't great anyway: it claims to return -1 on error, but -1 is actually a valid return
+  -- value for ZMQ_THREAD_PRIORITY, ZMQ_THREAD_SCHED_POLICY, and possibly others...
+  fromIntegral @CInt @Int <$> Libzmq.Bindings.zmq_ctx_get context option
 
 -- | Create a new ØMQ context.
 --
@@ -147,7 +153,7 @@ zmq_msg_data (Zmq_msg message) = do
   bytes <- Libzmq.Bindings.zmq_msg_data message
   ByteString.packCStringLen (bytes, fromIntegral @CSize @Int size)
 
--- | Free a ØMQ message initialized by 'zmq_msg_init' or 'zmq_msg_init_size'.
+-- | Free a ØMQ message initialized by 'zmq_msg_init' or 'zmq_msg_init_data', or 'zmq_msg_init_size'.
 zmq_msg_free :: Zmq_msg -> IO ()
 zmq_msg_free (Zmq_msg message) =
   free message
@@ -171,6 +177,8 @@ zmq_msg_get (Zmq_msg message) (Zmq_msg_option option) =
 
 -- | Initialise an empty ØMQ message.
 --
+-- The message must be freed with 'zmq_msg_free'.
+--
 -- http://api.zeromq.org/master:zmq-msg-init
 zmq_msg_init :: IO Zmq_msg
 zmq_msg_init = do
@@ -178,7 +186,30 @@ zmq_msg_init = do
   _ <- Libzmq.Bindings.zmq_msg_init message -- always returns 0
   pure (Zmq_msg message)
 
+-- | Initialise a ØMQ message from a buffer.
+--
+-- The message must be freed with 'zmq_msg_free'.
+--
+-- http://api.zeromq.org/master:zmq-msg-init-data
+zmq_msg_init_data :: ByteString -> IO (Either Zmq_error Zmq_msg)
+zmq_msg_init_data (ByteString.Internal.BS original len) = do
+  message <- malloc
+  copy <- mallocBytes len
+  withForeignPtr original \original1 ->
+    ByteString.Internal.memcpy copy original1 len
+  Libzmq.Bindings.zmq_msg_init_data message copy (fromIntegral @Int @CSize len) free2 nullPtr >>= \case
+    0 -> pure (Right (Zmq_msg message))
+    _ -> do
+      free message
+      free copy
+      Left <$> zmq_errno
+
+foreign import capi unsafe "static utils.h &free2"
+  free2 :: FunPtr (Ptr a -> Ptr b -> IO ())
+
 -- | Initialize an empty ØMQ message of a specified size.
+--
+-- The message must be freed with 'zmq_msg_free'.
 --
 -- http://api.zeromq.org/master:zmq-msg-init-size
 zmq_msg_init_size :: Int -> IO (Either Zmq_error Zmq_msg)

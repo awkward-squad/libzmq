@@ -13,7 +13,6 @@ import Data.Word (Word64)
 import Foreign.C.Error
 import Foreign.C.Types (CInt, CShort)
 import Foreign.Ptr (Ptr, nullPtr)
-import Foreign.Storable (Storable)
 import Libzmq.Bindings qualified
 
 -- | An atomic counter.
@@ -360,7 +359,6 @@ pattern ZMQ_SHARED = Zmq_msg_option Libzmq.Bindings.ZMQ_SHARED
 newtype Zmq_msg
   = Zmq_msg (Ptr Libzmq.Bindings.Zmq_msg)
   deriving stock (Eq, Ord)
-  deriving newtype (Storable)
 
 -- | A file descripter ØMQ pollitem.
 pattern Zmq_pollitem_fd :: Libzmq.Bindings.Zmq_fd -> Zmq_events -> Libzmq.Bindings.Zmq_pollitem
