@@ -1,0 +1,63 @@
+{-# LANGUAGE CPP #-}
+
+-- Sequester CPP + hsc2hs because it breaks tooling and is generally annoying
+
+module Libzmq.Bindings.Internal.Constants2 (module Libzmq.Bindings.Internal.Constants2) where
+
+#include <zmq.h>
+
+import Foreign.C (CInt)
+
+_EADDRINUSE :: CInt
+_EADDRINUSE = #const EADDRINUSE
+
+_EADDRNOTAVAIL :: CInt
+_EADDRNOTAVAIL = #const EADDRNOTAVAIL
+
+_EAFNOSUPPORT :: CInt
+_EAFNOSUPPORT = #const EAFNOSUPPORT
+
+_ECONNABORTED :: CInt
+_ECONNABORTED = #const ECONNABORTED
+
+_ECONNREFUSED :: CInt
+_ECONNREFUSED = #const ECONNREFUSED
+
+_ECONNRESET :: CInt
+_ECONNRESET = #const ECONNRESET
+
+_EHOSTUNREACH :: CInt
+_EHOSTUNREACH = #const EHOSTUNREACH
+
+_EINPROGRESS :: CInt
+_EINPROGRESS = #const EINPROGRESS
+
+_EMSGSIZE :: CInt
+_EMSGSIZE = #const EMSGSIZE
+
+_ENETDOWN :: CInt
+_ENETDOWN = #const ENETDOWN
+
+_ENETRESET :: CInt
+_ENETRESET = #const ENETRESET
+
+_ENETUNREACH :: CInt
+_ENETUNREACH = #const ENETUNREACH
+
+_ENOBUFS :: CInt
+_ENOBUFS = #const ENOBUFS
+
+_ENOTCONN :: CInt
+_ENOTCONN = #const ENOTCONN
+
+_ENOTSOCK :: CInt
+_ENOTSOCK = #const ENOTSOCK
+
+_ENOTSUP :: CInt
+_ENOTSUP = #const ENOTSUP
+
+_EPROTONOSUPPORT :: CInt
+_EPROTONOSUPPORT = #const EPROTONOSUPPORT
+
+_ETIMEDOUT :: CInt
+_ETIMEDOUT = #const ETIMEDOUT

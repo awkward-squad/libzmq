@@ -79,6 +79,7 @@ library
   install-includes: zmq-wrapper.h
   other-modules:
     Libzmq.Bindings.Internal.Constants
+    Libzmq.Bindings.Internal.Constants2
     Libzmq.Bindings.Internal.Functions
     Libzmq.Bindings.Internal.Types
   if os(windows)

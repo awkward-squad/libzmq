@@ -1,79 +1,21 @@
-{-# LANGUAGE CPP #-}
-
 module Libzmq.Bindings.Internal.Constants (module Libzmq.Bindings.Internal.Constants) where
-
-#include <zmq.h>
 
 import Foreign.C (CInt, CShort)
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Errors
 
-_EADDRINUSE :: CInt
-_EADDRINUSE = #const EADDRINUSE
-
-_EADDRNOTAVAIL :: CInt
-_EADDRNOTAVAIL = #const EADDRNOTAVAIL
-
-_EAFNOSUPPORT :: CInt
-_EAFNOSUPPORT = #const EAFNOSUPPORT
-
-_ECONNABORTED :: CInt
-_ECONNABORTED = #const ECONNABORTED
-
-_ECONNREFUSED :: CInt
-_ECONNREFUSED = #const ECONNREFUSED
-
-_ECONNRESET :: CInt
-_ECONNRESET = #const ECONNRESET
-
 pattern EFSM :: CInt
 pattern EFSM = 156384763
-
-_EHOSTUNREACH :: CInt
-_EHOSTUNREACH = #const EHOSTUNREACH
-
-_EINPROGRESS :: CInt
-_EINPROGRESS = #const EINPROGRESS
-
-_EMSGSIZE :: CInt
-_EMSGSIZE = #const EMSGSIZE
 
 pattern EMTHREAD :: CInt
 pattern EMTHREAD = 156384766
 
-_ENETDOWN :: CInt
-_ENETDOWN = #const ENETDOWN
-
-_ENETRESET :: CInt
-_ENETRESET = #const ENETRESET
-
-_ENETUNREACH :: CInt
-_ENETUNREACH = #const ENETUNREACH
-
-_ENOBUFS :: CInt
-_ENOBUFS = #const ENOBUFS
-
 pattern ENOCOMPATPROTO :: CInt
 pattern ENOCOMPATPROTO = 156384764
 
-_ENOTCONN :: CInt
-_ENOTCONN = #const ENOTCONN
-
-_ENOTSOCK :: CInt
-_ENOTSOCK = #const ENOTSOCK
-
-_ENOTSUP :: CInt
-_ENOTSUP = #const ENOTSUP
-
-_EPROTONOSUPPORT :: CInt
-_EPROTONOSUPPORT = #const EPROTONOSUPPORT
-
 pattern ETERM :: CInt
 pattern ETERM = 156384765
-
-_ETIMEDOUT :: CInt
-_ETIMEDOUT = #const ETIMEDOUT
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Context options
@@ -579,14 +521,14 @@ pattern ZMQ_POLLPRI = 8
 ------------------------------------------------------------------------------------------------------------------------
 -- DRAFT socket types
 
-pattern ZMQ_SERVER :: CInt
-pattern ZMQ_SERVER = 12
+pattern ZMQ_CHANNEL :: CInt
+pattern ZMQ_CHANNEL = 20
 
 pattern ZMQ_CLIENT :: CInt
 pattern ZMQ_CLIENT = 13
 
-pattern ZMQ_RADIO :: CInt
-pattern ZMQ_RADIO = 14
+pattern ZMQ_DGRAM :: CInt
+pattern ZMQ_DGRAM = 18
 
 pattern ZMQ_DISH :: CInt
 pattern ZMQ_DISH = 15
@@ -594,14 +536,77 @@ pattern ZMQ_DISH = 15
 pattern ZMQ_GATHER :: CInt
 pattern ZMQ_GATHER = 16
 
-pattern ZMQ_SCATTER :: CInt
-pattern ZMQ_SCATTER = 17
-
-pattern ZMQ_DGRAM :: CInt
-pattern ZMQ_DGRAM = 18
-
 pattern ZMQ_PEER :: CInt
 pattern ZMQ_PEER = 19
 
-pattern ZMQ_CHANNEL :: CInt
-pattern ZMQ_CHANNEL = 20
+pattern ZMQ_RADIO :: CInt
+pattern ZMQ_RADIO = 14
+
+pattern ZMQ_SCATTER :: CInt
+pattern ZMQ_SCATTER = 17
+
+pattern ZMQ_SERVER :: CInt
+pattern ZMQ_SERVER = 12
+
+------------------------------------------------------------------------------------------------------------------------
+-- DRAFT socket options
+
+pattern ZMQ_DISCONNECT_MSG :: CInt
+pattern ZMQ_DISCONNECT_MSG = 111
+
+pattern ZMQ_HELLO_MSG :: CInt
+pattern ZMQ_HELLO_MSG = 110
+
+pattern ZMQ_IN_BATCH_SIZE :: CInt
+pattern ZMQ_IN_BATCH_SIZE = 101
+
+pattern ZMQ_LOOPBACK_FASTPATH :: CInt
+pattern ZMQ_LOOPBACK_FASTPATH = 94
+
+pattern ZMQ_METADATA :: CInt
+pattern ZMQ_METADATA = 95
+
+pattern ZMQ_MULTICAST_LOOP :: CInt
+pattern ZMQ_MULTICAST_LOOP = 96
+
+pattern ZMQ_ONLY_FIRST_SUBSCRIBE :: CInt
+pattern ZMQ_ONLY_FIRST_SUBSCRIBE = 108
+
+pattern ZMQ_OUT_BATCH_SIZE :: CInt
+pattern ZMQ_OUT_BATCH_SIZE = 102
+
+pattern ZMQ_PRIORITY :: CInt
+pattern ZMQ_PRIORITY = 112
+
+pattern ZMQ_RECONNECT_STOP :: CInt
+pattern ZMQ_RECONNECT_STOP = 109
+
+pattern ZMQ_ROUTER_NOTIFY :: CInt
+pattern ZMQ_ROUTER_NOTIFY = 97
+
+pattern ZMQ_SOCKS_PASSWORD :: CInt
+pattern ZMQ_SOCKS_PASSWORD = 100
+
+pattern ZMQ_SOCKS_USERNAME :: CInt
+pattern ZMQ_SOCKS_USERNAME = 99
+
+pattern ZMQ_WSS_CERT_PEM :: CInt
+pattern ZMQ_WSS_CERT_PEM = 104
+
+pattern ZMQ_WSS_HOSTNAME :: CInt
+pattern ZMQ_WSS_HOSTNAME = 106
+
+pattern ZMQ_WSS_KEY_PEM :: CInt
+pattern ZMQ_WSS_KEY_PEM = 103
+
+pattern ZMQ_WSS_TRUST_PEM :: CInt
+pattern ZMQ_WSS_TRUST_PEM = 105
+
+pattern ZMQ_WSS_TRUST_SYSTEM :: CInt
+pattern ZMQ_WSS_TRUST_SYSTEM = 107
+
+pattern ZMQ_XPUB_MANUAL_LAST_VALUE :: CInt
+pattern ZMQ_XPUB_MANUAL_LAST_VALUE = 98
+
+pattern ZMQ_ZAP_ENFORCE_DOMAIN :: CInt
+pattern ZMQ_ZAP_ENFORCE_DOMAIN = 93

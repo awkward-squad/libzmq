@@ -295,15 +295,39 @@ module Libzmq.Bindings
     pattern ZMQ_POLLPRI,
 
     -- * Draft constants
-    pattern ZMQ_SERVER,
+
+    -- ** Socket types
+    pattern ZMQ_CHANNEL,
     pattern ZMQ_CLIENT,
-    pattern ZMQ_RADIO,
+    pattern ZMQ_DGRAM,
     pattern ZMQ_DISH,
     pattern ZMQ_GATHER,
-    pattern ZMQ_SCATTER,
-    pattern ZMQ_DGRAM,
     pattern ZMQ_PEER,
-    pattern ZMQ_CHANNEL,
+    pattern ZMQ_RADIO,
+    pattern ZMQ_SCATTER,
+    pattern ZMQ_SERVER,
+
+    -- ** Socket options
+    pattern ZMQ_DISCONNECT_MSG,
+    pattern ZMQ_HELLO_MSG,
+    pattern ZMQ_IN_BATCH_SIZE,
+    pattern ZMQ_LOOPBACK_FASTPATH,
+    pattern ZMQ_METADATA,
+    pattern ZMQ_MULTICAST_LOOP,
+    pattern ZMQ_ONLY_FIRST_SUBSCRIBE,
+    pattern ZMQ_OUT_BATCH_SIZE,
+    pattern ZMQ_PRIORITY,
+    pattern ZMQ_RECONNECT_STOP,
+    pattern ZMQ_ROUTER_NOTIFY,
+    pattern ZMQ_SOCKS_PASSWORD,
+    pattern ZMQ_SOCKS_USERNAME,
+    pattern ZMQ_WSS_CERT_PEM,
+    pattern ZMQ_WSS_HOSTNAME,
+    pattern ZMQ_WSS_KEY_PEM,
+    pattern ZMQ_WSS_TRUST_PEM,
+    pattern ZMQ_WSS_TRUST_SYSTEM,
+    pattern ZMQ_XPUB_MANUAL_LAST_VALUE,
+    pattern ZMQ_ZAP_ENFORCE_DOMAIN,
   )
 where
 
@@ -311,6 +335,7 @@ import Data.Coerce (coerce)
 import Foreign.C (CInt)
 import Foreign.C.Error (Errno (Errno), eAGAIN, eBADF, eFAULT, eINTR, eINVAL, eMFILE, eNODEV, eNOENT, eNOMEM)
 import Libzmq.Bindings.Internal.Constants
+import Libzmq.Bindings.Internal.Constants2
 import Libzmq.Bindings.Internal.Functions
 import Libzmq.Bindings.Internal.Types
 
