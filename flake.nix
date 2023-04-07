@@ -16,7 +16,9 @@
               nixpkgs.legacyPackages.x86_64-darwin.gmp
               nixpkgs.legacyPackages.x86_64-darwin.libsodium
               nixpkgs.legacyPackages.x86_64-darwin.pkg-config
-              nixpkgs.legacyPackages.x86_64-darwin.zeromq
+              (nixpkgs.legacyPackages.x86_64-darwin.zeromq.overrideAttrs (finalAttrs: previousAttrs: {
+                enableDrafts = true;
+              }))
             ];
           };
         x86_64-linux =
@@ -25,7 +27,9 @@
               nixpkgs.legacyPackages.x86_64-linux.gmp
               nixpkgs.legacyPackages.x86_64-linux.libsodium
               nixpkgs.legacyPackages.x86_64-linux.pkg-config
-              nixpkgs.legacyPackages.x86_64-linux.zeromq
+              (nixpkgs.legacyPackages.x86_64-linux.zeromq.overrideAttrs (finalAttrs: previousAttrs: {
+                enableDrafts = true;
+              }))
             ];
           };
       };

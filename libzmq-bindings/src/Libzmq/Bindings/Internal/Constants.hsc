@@ -562,7 +562,7 @@ _ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED :: CInt
 _ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED = #const ZMQ_PROTOCOL_ERROR_ZMTP_UNSPECIFIED
 
 ------------------------------------------------------------------------------------------------------------------------
--- I/O multiplexint
+-- I/O multiplexing
 
 _ZMQ_POLLIN :: CShort
 _ZMQ_POLLIN = #const ZMQ_POLLIN

@@ -26,6 +26,11 @@ source-repository head
   location: https://github.com/mitchellwrosen/libzmq.git
   subdir: libzmq-bindings
 
+flag draft
+  description: Expose DRAFT API
+  Default: False
+  Manual: True
+
 library
   build-depends:
     base ^>= 4.16 || ^>= 4.17 || ^>= 4.18,
@@ -56,15 +61,20 @@ library
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
+  if flag(draft)
+    cpp-options: -DDRAFT
   hs-source-dirs: src
   include-dirs: cbits
   includes: zmq-wrapper.h
+  install-includes: zmq-wrapper.h
   other-modules:
     Libzmq.Bindings.Internal.Constants
     Libzmq.Bindings.Internal.Functions
     Libzmq.Bindings.Internal.Types
+  if flag(draft)
+    other-modules:
+      Libzmq.Bindings.Internal.DraftConstants
   if os(windows)
     extra-libraries: zmq
   else
     pkgconfig-depends: libzmq == 4.3.4
-  install-includes: zmq-wrapper.h
