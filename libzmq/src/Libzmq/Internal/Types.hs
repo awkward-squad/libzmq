@@ -782,24 +782,57 @@ newtype Zmq_socket_type
 
 instance Show Zmq_socket_type where
   show = \case
+    ZMQ_CHANNEL -> "ZMQ_CHANNEL"
+    ZMQ_CLIENT -> "ZMQ_CLIENT"
     ZMQ_DEALER -> "ZMQ_DEALER"
+    ZMQ_DGRAM -> "ZMQ_DGRAM"
+    ZMQ_DISH -> "ZMQ_DISH"
+    ZMQ_GATHER -> "ZMQ_GATHER"
     ZMQ_PAIR -> "ZMQ_PAIR"
+    ZMQ_PEER -> "ZMQ_PEER"
     ZMQ_PUB -> "ZMQ_PUB"
     ZMQ_PULL -> "ZMQ_PULL"
     ZMQ_PUSH -> "ZMQ_PUSH"
+    ZMQ_RADIO -> "ZMQ_RADIO"
     ZMQ_REP -> "ZMQ_REP"
     ZMQ_REQ -> "ZMQ_REQ"
     ZMQ_ROUTER -> "ZMQ_ROUTER"
+    ZMQ_SCATTER -> "ZMQ_SCATTER"
+    ZMQ_SERVER -> "ZMQ_SERVER"
     ZMQ_STREAM -> "ZMQ_STREAM"
     ZMQ_SUB -> "ZMQ_SUB"
     ZMQ_XPUB -> "ZMQ_XPUB"
     ZMQ_XSUB -> "ZMQ_XSUB"
 
+-- | /Draft API/.
+pattern ZMQ_CHANNEL :: Zmq_socket_type
+pattern ZMQ_CHANNEL = Zmq_socket_type Libzmq.Bindings.ZMQ_CHANNEL
+
+-- | /Draft API/.
+pattern ZMQ_CLIENT :: Zmq_socket_type
+pattern ZMQ_CLIENT = Zmq_socket_type Libzmq.Bindings.ZMQ_CLIENT
+
 pattern ZMQ_DEALER :: Zmq_socket_type
 pattern ZMQ_DEALER = Zmq_socket_type Libzmq.Bindings.ZMQ_DEALER
 
+-- | /Draft API/.
+pattern ZMQ_DGRAM :: Zmq_socket_type
+pattern ZMQ_DGRAM = Zmq_socket_type Libzmq.Bindings.ZMQ_DGRAM
+
+-- | /Draft API/.
+pattern ZMQ_DISH :: Zmq_socket_type
+pattern ZMQ_DISH = Zmq_socket_type Libzmq.Bindings.ZMQ_DISH
+
+-- | /Draft API/.
+pattern ZMQ_GATHER :: Zmq_socket_type
+pattern ZMQ_GATHER = Zmq_socket_type Libzmq.Bindings.ZMQ_GATHER
+
 pattern ZMQ_PAIR :: Zmq_socket_type
 pattern ZMQ_PAIR = Zmq_socket_type Libzmq.Bindings.ZMQ_PAIR
+
+-- | /Draft API/.
+pattern ZMQ_PEER :: Zmq_socket_type
+pattern ZMQ_PEER = Zmq_socket_type Libzmq.Bindings.ZMQ_PEER
 
 pattern ZMQ_PUB :: Zmq_socket_type
 pattern ZMQ_PUB = Zmq_socket_type Libzmq.Bindings.ZMQ_PUB
@@ -810,6 +843,10 @@ pattern ZMQ_PULL = Zmq_socket_type Libzmq.Bindings.ZMQ_PULL
 pattern ZMQ_PUSH :: Zmq_socket_type
 pattern ZMQ_PUSH = Zmq_socket_type Libzmq.Bindings.ZMQ_PUSH
 
+-- | /Draft API/.
+pattern ZMQ_RADIO :: Zmq_socket_type
+pattern ZMQ_RADIO = Zmq_socket_type Libzmq.Bindings.ZMQ_RADIO
+
 pattern ZMQ_REP :: Zmq_socket_type
 pattern ZMQ_REP = Zmq_socket_type Libzmq.Bindings.ZMQ_REP
 
@@ -818,6 +855,14 @@ pattern ZMQ_REQ = Zmq_socket_type Libzmq.Bindings.ZMQ_REQ
 
 pattern ZMQ_ROUTER :: Zmq_socket_type
 pattern ZMQ_ROUTER = Zmq_socket_type Libzmq.Bindings.ZMQ_ROUTER
+
+-- | /Draft API/.
+pattern ZMQ_SCATTER :: Zmq_socket_type
+pattern ZMQ_SCATTER = Zmq_socket_type Libzmq.Bindings.ZMQ_SCATTER
+
+-- | /Draft API/.
+pattern ZMQ_SERVER :: Zmq_socket_type
+pattern ZMQ_SERVER = Zmq_socket_type Libzmq.Bindings.ZMQ_SERVER
 
 pattern ZMQ_STREAM :: Zmq_socket_type
 pattern ZMQ_STREAM = Zmq_socket_type Libzmq.Bindings.ZMQ_STREAM
@@ -832,14 +877,23 @@ pattern ZMQ_XSUB :: Zmq_socket_type
 pattern ZMQ_XSUB = Zmq_socket_type Libzmq.Bindings.ZMQ_XSUB
 
 {-# COMPLETE
+  ZMQ_CHANNEL,
+  ZMQ_CLIENT,
   ZMQ_DEALER,
+  ZMQ_DGRAM,
+  ZMQ_DISH,
+  ZMQ_GATHER,
   ZMQ_PAIR,
+  ZMQ_PEER,
   ZMQ_PUB,
   ZMQ_PULL,
   ZMQ_PUSH,
+  ZMQ_RADIO,
   ZMQ_REP,
   ZMQ_REQ,
   ZMQ_ROUTER,
+  ZMQ_SCATTER,
+  ZMQ_SERVER,
   ZMQ_STREAM,
   ZMQ_SUB,
   ZMQ_XPUB,
