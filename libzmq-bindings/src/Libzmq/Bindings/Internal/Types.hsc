@@ -13,16 +13,17 @@ import Foreign.Ptr (Ptr)
 import Foreign.Storable (Storable (..))
 
 -- Don't know how to just point at zmq_fd_t, so we copy its definition in here
+
+-- | A ØMQ file descriptor.
+--
+-- Though this is an exposed type alias, it is platform-dependent, following ØMQ.
 #if defined _WIN32
 #if defined _WIN64
--- | A ØMQ file descriptor.
 type Zmq_fd = Word64
 #else
--- | A ØMQ file descriptor.
 type Zmq_fd = CUInt
 #endif
 #else
--- | A ØMQ file descriptor.
 type Zmq_fd = CInt
 #endif
 
