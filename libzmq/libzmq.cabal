@@ -1,7 +1,7 @@
 cabal-version: 3.0
 
 name: libzmq
-version: 0
+version: 4.3.4.0
 description: libzmq 4.3.4 bindings
 
 extra-source-files:
@@ -44,7 +44,7 @@ library
     array ^>= 0.5.3,
     base ^>= 4.16 || ^>= 4.17 || ^>= 4.18,
     bytestring ^>= 0.11.0,
-    libzmq-bindings,
+    libzmq-bindings == 4.3.4.*,
     text ^>= 2.0,
   c-sources: cbits/utils.c
   exposed-modules:
@@ -61,7 +61,7 @@ test-suite tests
   build-depends:
     base,
     libzmq,
-    libzmq-bindings,
+    libzmq-bindings == 4.3.4.*,
     tasty ^>= 1.4.3,
     tasty-hunit ^>= 0.10.0,
     text ^>= 2.0,

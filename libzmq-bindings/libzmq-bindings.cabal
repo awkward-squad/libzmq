@@ -9,12 +9,29 @@ license: BSD-3-Clause
 license-file: LICENSE
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
 name: libzmq-bindings
-synopsis: libzmq-4.3 bindings
+synopsis: zeromq 4.3.4 bindings
 tested-with: GHC == 9.2.7, GHC == 9.4.4, GHC == 9.6.1
-version: 0.1.0
+version: 4.3.4.0
 
 description:
-  Bindings to @libzmq-4.3.4@.
+  Complete bindings to @zeromq 4.3.4@. To build use this library, you must provide an environment in which @pkg-config@
+  can locate @zeromq 4.3.4@ built with /DRAFT/ API support.
+
+  Because the underlying @zeromq@ library has a version number of its own, this library does __not__ follow the Package
+  Versioning Policy:
+
+    * The first three version numbers correspond exactly to the underlying @zeromq@ version number.
+    * The fourth version number begins at 0 and gets bumped for any reason whatsoever (dependency bounds adjustment,
+      bugfix, etc).
+
+  Users who want the latest version of this library that is compatible with @zeromq X.Y.Z@ should therefore add the
+  following to their @build-depends@ section:
+
+    > build-depends: libzmq-bindings == X.Y.Z.*
+
+  Otherwise, users should depend on a specific version of this library:
+
+    > build-depends: libzmq-bindings == X.Y.Z.Q
 
 extra-source-files:
   CHANGELOG.md
