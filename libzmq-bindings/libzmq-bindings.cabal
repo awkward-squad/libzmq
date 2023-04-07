@@ -14,7 +14,7 @@ tested-with: GHC == 9.2.7, GHC == 9.4.4, GHC == 9.6.1
 version: 0.1.0
 
 description:
-  Bindings to `libzmq-4.3`, without draft API support.
+  Bindings to @libzmq-4.3.4@, without draft API support.
 
 extra-source-files:
   CHANGELOG.md
@@ -66,5 +66,5 @@ library
   if os(windows)
     extra-libraries: zmq
   else
-    pkgconfig-depends: libzmq >= 4.3 && < 4.4
+    pkgconfig-depends: libzmq == 4.3.4
   install-includes: zmq-wrapper.h
